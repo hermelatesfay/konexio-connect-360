@@ -1,13 +1,16 @@
-import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { type ChangeEvent, type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ArrowRight,
+  Bell,
   BookOpen,
   Briefcase,
   Building2,
   CheckCircle2,
   FileBarChart,
+  ImagePlus,
   Lock,
   Mail,
+  RefreshCw,
   Save,
   Search,
   Send,
@@ -16,15 +19,20 @@ import {
 } from 'lucide-react';
 import {
   fetchDashboardData,
+  markNotificationRead,
   submitExpressInterest,
   updateAlumniDashboard,
   updateDashboardNewsletter,
+  updateLearnerProgress,
+  uploadFile,
 } from '../api';
+import SecuritySettingsPanel from '../components/SecuritySettingsPanel';
 import { useAuthStore } from '../store/authStore';
 import type {
   AnnualReport,
   CourseModule,
   ImpactSummary,
+  NotificationItem,
   PathwayInfo,
   PublicAlumnus,
 } from '../types';
@@ -40,9 +48,11 @@ type LearnerDashboardPayload = {
   pathway: PathwayInfo;
   all_pathways: PathwayInfo[];
   modules: CourseModule[];
+  completed_modules?: string[];
   learning_goal: string | null;
   location: string | null;
   peers_in_pathway: number;
+  notifications?: NotificationItem[];
 };
 
 type AlumniDashboardPayload = {
@@ -60,6 +70,8 @@ type AlumniDashboardPayload = {
     availability: string;
     portfolio_title: string;
     portfolio_url: string | null;
+    portfolio_image?: string | null;
+    photo_file?: string | null;
     personal_website: string | null;
     linkedin_url: string | null;
     consent_to_publish: boolean;
@@ -74,6 +86,7 @@ type AlumniDashboardPayload = {
     interest_type: string;
     message: string;
   }>;
+  notifications?: NotificationItem[];
 };
 
 type EmployerDashboardPayload = {
@@ -132,23 +145,20 @@ const DashboardPage = ({ onNavigate }: DashboardPageProps) => {
   const user = useAuthStore((s) => s.user);
   const token = useAuthStore((s) => s.token);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const logout = useAuthStore((s) => s.logout);
 
+  const [activeTab, setActiveTab] = useState<'workspace' | 'security'>('workspace');
   const [data, setData] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const loading = Boolean(isAuthenticated && token) && !data && !error;
+  const loading = Boolean(isAuthenticated && token && user?.role !== 'admin') && !data && !error;
 
-  // Learner module checklist (persisted per user)
-  const [completedModules, setCompletedModules] = useState<Record<string, boolean>>(() => {
-    const activeUser = useAuthStore.getState().user;
-    if (!activeUser) return { M0: true, M1: true };
-    try {
-      const saved = localStorage.getItem(`konexio-modules-${activeUser.id}`);
-      if (saved) return JSON.parse(saved) as Record<string, boolean>;
-    } catch {
-      /* Storage optional */
-    }
-    return { M0: true, M1: true };
-  });
+  // Learner module checklist (persisted in PostgreSQL via /api/dashboard/learner/progress)
+  const [completedModules, setCompletedModules] = useState<Record<string, boolean>>({});
+  const [savingModuleCode, setSavingModuleCode] = useState<string | null>(null);
+
+  // Notifications state
+  const [notificationsList, setNotificationsList] = useState<NotificationItem[]>([]);
+  const [markingNotifId, setMarkingNotifId] = useState<number | null>(null);
 
   // Alumni editable profile, portfolio & consent fields
   const [shortBio, setShortBio] = useState('');
@@ -158,6 +168,9 @@ const DashboardPage = ({ onNavigate }: DashboardPageProps) => {
   const [portfolioUrl, setPortfolioUrl] = useState('');
   const [personalWebsite, setPersonalWebsite] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
+  const [portfolioImagePreviewUrl, setPortfolioImagePreviewUrl] = useState<string | null>(null);
+  const [uploadingAsset, setUploadingAsset] = useState<'alumni_photo' | 'alumni_portfolio' | null>(null);
   const [consentPublish, setConsentPublish] = useState(false);
   const [consentPhoto, setConsentPhoto] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -177,29 +190,56 @@ const DashboardPage = ({ onNavigate }: DashboardPageProps) => {
   const [newsletterNote, setNewsletterNote] = useState<string | null>(null);
   const [newsletterUpdating, setNewsletterUpdating] = useState(false);
 
+  const hydratePayload = useCallback((res: Record<string, unknown>) => {
+    setData(res);
+    setError(null);
+    if (Array.isArray(res.notifications)) {
+      setNotificationsList(res.notifications as NotificationItem[]);
+    }
+    if (res.role === 'learner' && Array.isArray(res.completed_modules)) {
+      const nextMap: Record<string, boolean> = {};
+      for (const code of res.completed_modules as string[]) {
+        nextMap[code] = true;
+      }
+      setCompletedModules(nextMap);
+    }
+    if (res.role === 'alumni' && res.profile) {
+      const prof = res.profile as AlumniDashboardPayload['profile'];
+      if (prof) {
+        setShortBio(prof.short_bio ?? '');
+        setAvailability(prof.availability ?? 'Open to work');
+        setSkillsText((prof.skills ?? []).join(', '));
+        setPortfolioTitle(prof.portfolio_title ?? '');
+        setPortfolioUrl(prof.portfolio_url ?? '');
+        setPersonalWebsite(prof.personal_website ?? '');
+        setLinkedinUrl(prof.linkedin_url ?? '');
+        setPhotoPreviewUrl(prof.photo_file ?? null);
+        setPortfolioImagePreviewUrl(prof.portfolio_image ?? null);
+        setConsentPublish(Boolean(prof.consent_to_publish));
+        setConsentPhoto(Boolean(prof.consent_to_show_photo));
+      }
+    }
+  }, []);
+
+  const refreshDashboard = useCallback(async () => {
+    if (!isAuthenticated || !token || user?.role === 'admin') return;
+    setError(null);
+    try {
+      const res = await fetchDashboardData(token);
+      hydratePayload(res);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to load your dashboard.');
+    }
+  }, [isAuthenticated, token, user?.role, hydratePayload]);
+
   useEffect(() => {
-    if (!isAuthenticated || !token) return;
+    if (!isAuthenticated || !token || user?.role === 'admin') return;
     let active = true;
 
     fetchDashboardData(token)
       .then((res) => {
         if (!active) return;
-        setData(res);
-        setError(null);
-        if (res.role === 'alumni' && res.profile) {
-          const prof = res.profile as AlumniDashboardPayload['profile'];
-          if (prof) {
-            setShortBio(prof.short_bio ?? '');
-            setAvailability(prof.availability ?? 'Open to work');
-            setSkillsText((prof.skills ?? []).join(', '));
-            setPortfolioTitle(prof.portfolio_title ?? '');
-            setPortfolioUrl(prof.portfolio_url ?? '');
-            setPersonalWebsite(prof.personal_website ?? '');
-            setLinkedinUrl(prof.linkedin_url ?? '');
-            setConsentPublish(Boolean(prof.consent_to_publish));
-            setConsentPhoto(Boolean(prof.consent_to_show_photo));
-          }
-        }
+        hydratePayload(res);
       })
       .catch((err) => {
         if (!active) return;
@@ -209,19 +249,97 @@ const DashboardPage = ({ onNavigate }: DashboardPageProps) => {
     return () => {
       active = false;
     };
-  }, [isAuthenticated, token]);
+  }, [isAuthenticated, token, user?.role, hydratePayload]);
 
-  const toggleModule = (code: string) => {
-    if (!user) return;
-    setCompletedModules((prev) => {
-      const next = { ...prev, [code]: !prev[code] };
-      try {
-        localStorage.setItem(`konexio-modules-${user.id}`, JSON.stringify(next));
-      } catch {
-        /* Storage optional */
+  const toggleModule = async (code: string) => {
+    if (!user || !token) return;
+    const nextChecked = !completedModules[code];
+    setCompletedModules((prev) => ({ ...prev, [code]: nextChecked }));
+    setSavingModuleCode(code);
+    setError(null);
+    try {
+      const res = await updateLearnerProgress(token, code, nextChecked);
+      const nextMap: Record<string, boolean> = {};
+      for (const c of res.completed_modules) {
+        nextMap[c] = true;
       }
-      return next;
-    });
+      setCompletedModules(nextMap);
+    } catch (err) {
+      setCompletedModules((prev) => ({ ...prev, [code]: !nextChecked }));
+      setError(err instanceof Error ? err.message : 'Unable to save module progress.');
+    } finally {
+      setSavingModuleCode(null);
+    }
+  };
+
+  const handleMarkNotificationRead = async (id: number) => {
+    if (!token) return;
+    setMarkingNotifId(id);
+    try {
+      await markNotificationRead(token, id);
+      setNotificationsList((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to update notification.');
+    } finally {
+      setMarkingNotifId(null);
+    }
+  };
+
+  const handleAssetUpload = async (
+    purpose: 'alumni_photo' | 'alumni_portfolio',
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file || !token) return;
+
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setError('Please select a PNG, JPEG, or WEBP image.');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setError('Image must be 2 MB or smaller.');
+      return;
+    }
+
+    setUploadingAsset(purpose);
+    setError(null);
+    setSaveMessage(null);
+
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(new Error('Failed to read selected file.'));
+        reader.readAsDataURL(file);
+      });
+
+      const uploaded = await uploadFile(token, {
+        purpose,
+        filename: file.name,
+        mime_type: file.type,
+        data_base64: dataUrl,
+      });
+
+      if (purpose === 'alumni_photo') {
+        setPhotoPreviewUrl(uploaded.url);
+        setSaveMessage(
+          'Profile photo uploaded to PostgreSQL storage. Public visibility respects your photo consent checkbox.',
+        );
+      } else {
+        setPortfolioImagePreviewUrl(uploaded.url);
+        setSaveMessage(
+          'Portfolio image uploaded to PostgreSQL storage. Public visibility respects your photo consent checkbox.',
+        );
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to upload image.');
+    } finally {
+      setUploadingAsset(null);
+    }
   };
 
   const handleSaveAlumni = async (e: FormEvent) => {
@@ -361,6 +479,37 @@ const DashboardPage = ({ onNavigate }: DashboardPageProps) => {
     );
   }
 
+  if (user.role === 'admin' && user.aal !== 'aal2') {
+    return (
+      <section className="dashboard-shell">
+        <div className="container" style={{ maxWidth: '640px' }}>
+          <div className="form-panel">
+            <div className="alert-box alert-error" style={{ marginBottom: '20px' }}>
+              <Lock size={18} aria-hidden="true" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <strong>Two-Factor Verification Required</strong>
+                <p style={{ margin: '4px 0 0' }}>
+                  Administrator accounts require two-factor authenticator verification (AAL2) before
+                  accessing protected workspaces.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => {
+                logout();
+                onNavigate('/login');
+              }}
+            >
+              Sign In with Two-Factor Verification
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="dashboard-shell">
       <div className="container">
@@ -380,14 +529,36 @@ const DashboardPage = ({ onNavigate }: DashboardPageProps) => {
                   <span className="mono">{user.linked_business_id}</span>
                 </>
               ) : null}
+              <span>·</span>
+              <span className="mono">{user.totp_enabled ? '2FA Active' : '2FA Optional'}</span>
             </div>
           </div>
 
-          <div className="hero-actions" style={{ marginTop: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <div className="segmented-control" role="tablist" aria-label="Dashboard sections">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'workspace'}
+                className={`segmented-btn${activeTab === 'workspace' ? ' is-active' : ''}`}
+                onClick={() => setActiveTab('workspace')}
+              >
+                Workspace
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'security'}
+                className={`segmented-btn${activeTab === 'security' ? ' is-active' : ''}`}
+                onClick={() => setActiveTab('security')}
+              >
+                Security &amp; 2FA
+              </button>
+            </div>
             {user.role === 'admin' ? (
-              <button type="button" className="btn btn-amber" onClick={() => onNavigate('/admin')}>
-                <Shield size={16} aria-hidden="true" />
-                Open Administrator Console
+              <button type="button" className="btn btn-amber btn-sm" onClick={() => onNavigate('/admin')}>
+                <Shield size={15} aria-hidden="true" />
+                Administrator Console
               </button>
             ) : null}
             <button
@@ -400,15 +571,117 @@ const DashboardPage = ({ onNavigate }: DashboardPageProps) => {
           </div>
         </div>
 
-        {loading ? <p className="card-copy">Loading dashboard workspace...</p> : null}
-        {error ? (
-          <div className="alert-box alert-error" style={{ marginBottom: '20px' }}>
-            {error}
-          </div>
-        ) : null}
+        {activeTab === 'security' ? (
+          <SecuritySettingsPanel />
+        ) : (
+          <>
+            {user.role === 'admin' ? (
+              <div className="form-panel" style={{ marginBottom: '24px' }}>
+                <span className="kicker">Administrator Access Verified (AAL2)</span>
+                <h2 className="card-title" style={{ marginBottom: '8px' }}>
+                  Manage Konexio Connect Governance &amp; Moderation
+                </h2>
+                <p className="card-copy" style={{ marginBottom: '16px' }}>
+                  Your session has completed two-factor verification. Open the Administrator Console to
+                  review alumni consent, approve partner organisations, manage user permissions, or record
+                  live impact updates.
+                </p>
+                <button type="button" className="btn btn-primary" onClick={() => onNavigate('/admin')}>
+                  <Shield size={16} aria-hidden="true" />
+                  Open Administrator Console
+                </button>
+              </div>
+            ) : null}
 
-        {/* 1. Employer / Client Workspace */}
-        {!loading && data?.role === 'employer' ? (() => {
+            {loading ? <p className="card-copy">Loading dashboard workspace...</p> : null}
+            {error ? (
+              <div
+                className="alert-box alert-error"
+                style={{ marginBottom: '20px', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}
+              >
+                <span>{error}</span>
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  onClick={() => void refreshDashboard()}
+                >
+                  <RefreshCw size={14} aria-hidden="true" />
+                  Retry
+                </button>
+              </div>
+            ) : null}
+
+            {!loading && notificationsList.length > 0 ? (
+              <div className="form-panel" style={{ marginBottom: '24px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '12px',
+                    marginBottom: '12px',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Bell size={18} aria-hidden="true" style={{ color: 'var(--amber-ink)' }} />
+                    <h2 className="card-title">Notifications &amp; Account Alerts</h2>
+                  </div>
+                  <span className="mono" style={{ fontSize: '0.8rem', color: 'var(--slate)' }}>
+                    {notificationsList.filter((n) => !n.is_read).length} unread
+                  </span>
+                </div>
+                <div className="notifications-list">
+                  {notificationsList.slice(0, 6).map((item) => (
+                    <div
+                      key={item.id}
+                      className={`notification-item${!item.is_read ? ' notification-unread' : ''}`}
+                    >
+                      <div style={{ flex: 1 }}>
+                        <div className="meta-inline">
+                          <strong style={{ color: 'var(--indigo)' }}>{item.title}</strong>
+                          <span>·</span>
+                          <span className="mono">{item.category}</span>
+                          <span>·</span>
+                          <span>{new Date(item.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <p className="card-copy" style={{ fontSize: '0.86rem', marginTop: '4px' }}>
+                          {item.body}
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
+                        {item.link_path && item.link_path !== '/dashboard' ? (
+                          <button
+                            type="button"
+                            className="btn btn-outline btn-sm"
+                            onClick={() => onNavigate(item.link_path)}
+                          >
+                            Open
+                          </button>
+                        ) : null}
+                        {!item.is_read ? (
+                          <button
+                            type="button"
+                            className="btn btn-outline btn-sm"
+                            disabled={markingNotifId === item.id}
+                            onClick={() => void handleMarkNotificationRead(item.id)}
+                          >
+                            {markingNotifId === item.id ? 'Saving...' : 'Mark read'}
+                          </button>
+                        ) : (
+                          <span className="mono" style={{ fontSize: '0.76rem', color: 'var(--slate)' }}>
+                            Read
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {/* 1. Employer / Client Workspace */}
+            {!loading && data?.role === 'employer' ? (() => {
           const employer = data as EmployerDashboardPayload;
           return (
             <div style={{ display: 'grid', gap: '24px' }}>
@@ -763,7 +1036,8 @@ const DashboardPage = ({ onNavigate }: DashboardPageProps) => {
                         <input
                           type="checkbox"
                           checked={Boolean(completedModules[mod.code])}
-                          onChange={() => toggleModule(mod.code)}
+                          disabled={savingModuleCode === mod.code}
+                          onChange={() => void toggleModule(mod.code)}
                         />
                         <div>
                           <strong style={{ color: 'var(--navy)' }}>
@@ -771,6 +1045,7 @@ const DashboardPage = ({ onNavigate }: DashboardPageProps) => {
                           </strong>
                           <div style={{ fontSize: '0.82rem', color: 'var(--slate)' }}>
                             {mod.submodules.length} core topics
+                            {savingModuleCode === mod.code ? ' · Saving...' : ''}
                           </div>
                         </div>
                       </label>
@@ -946,6 +1221,62 @@ const DashboardPage = ({ onNavigate }: DashboardPageProps) => {
                       onChange={(e) => setShortBio(e.target.value)}
                       maxLength={2000}
                     />
+                  </div>
+
+                  <div className="form-grid-2">
+                    <div className="field-group">
+                      <label htmlFor="alum-photo-upload">Profile photo (PNG, JPEG, WEBP · max 2 MB)</label>
+                      <label
+                        htmlFor="alum-photo-upload"
+                        className="btn btn-outline btn-sm"
+                        style={{ width: 'fit-content', cursor: 'pointer' }}
+                      >
+                        <ImagePlus size={15} aria-hidden="true" />
+                        {uploadingAsset === 'alumni_photo' ? 'Uploading photo...' : 'Upload Profile Photo'}
+                      </label>
+                      <input
+                        id="alum-photo-upload"
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        className="sr-only"
+                        disabled={uploadingAsset !== null}
+                        onChange={(e) => void handleAssetUpload('alumni_photo', e)}
+                      />
+                      {photoPreviewUrl ? (
+                        <div className="portfolio-preview-card" style={{ marginTop: '6px', maxWidth: '220px' }}>
+                          <img src={photoPreviewUrl} alt="Alumnus uploaded profile preview" />
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <div className="field-group">
+                      <label htmlFor="alum-portfolio-upload">
+                        Portfolio showcase image (PNG, JPEG, WEBP · max 2 MB)
+                      </label>
+                      <label
+                        htmlFor="alum-portfolio-upload"
+                        className="btn btn-outline btn-sm"
+                        style={{ width: 'fit-content', cursor: 'pointer' }}
+                      >
+                        <ImagePlus size={15} aria-hidden="true" />
+                        {uploadingAsset === 'alumni_portfolio'
+                          ? 'Uploading portfolio...'
+                          : 'Upload Portfolio Image'}
+                      </label>
+                      <input
+                        id="alum-portfolio-upload"
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        className="sr-only"
+                        disabled={uploadingAsset !== null}
+                        onChange={(e) => void handleAssetUpload('alumni_portfolio', e)}
+                      />
+                      {portfolioImagePreviewUrl ? (
+                        <div className="portfolio-preview-card" style={{ marginTop: '6px', maxWidth: '220px' }}>
+                          <img src={portfolioImagePreviewUrl} alt="Uploaded portfolio preview" />
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
 
                   <label className="checkbox-field">
@@ -1204,6 +1535,8 @@ const DashboardPage = ({ onNavigate }: DashboardPageProps) => {
             </div>
           );
         })() : null}
+          </>
+        )}
       </div>
     </section>
   );

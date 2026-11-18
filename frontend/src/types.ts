@@ -17,11 +17,16 @@ export type AuthUser = {
   pathway_code?: string | null;
   country?: string | null;
   linked_business_id?: string | null;
+  totp_enabled?: boolean;
+  mfa_required?: boolean;
+  aal?: 'aal1' | 'aal2';
+  reauthenticated_at?: number | null;
 };
 
 export type LoginPayload = {
   email: string;
   password: string;
+  remember_me?: boolean;
 };
 
 export type RegisterPayload = {
@@ -53,10 +58,85 @@ export type RegisterPayload = {
 };
 
 export type AuthResponsePayload = {
-  access_token: string;
-  token_type: string;
+  access_token?: string;
+  token_type?: string;
+  requires_2fa?: boolean;
+  requires_2fa_setup?: boolean;
+  mfa_token?: string;
   user: AuthUser;
 };
+
+export type LoginStepResult = {
+  status: 'authenticated' | 'mfa_setup' | 'mfa_challenge';
+  user: AuthUser;
+};
+
+export type TwoFactorEnrollStartPayload = {
+  qr_data_url: string;
+  manual_secret: string;
+  otpauth_uri: string;
+  issuer: string;
+  account: string;
+};
+
+export type TwoFactorVerifyResponse = {
+  access_token: string;
+  token_type: string;
+  recovery_codes?: string[];
+  user: AuthUser;
+};
+
+export type TwoFactorStatusPayload = {
+  totp_enabled: boolean;
+  mandatory_for_role: boolean;
+  aal: 'aal1' | 'aal2';
+  recovery_codes_remaining: number;
+  fresh_auth_valid: boolean;
+};
+
+export interface NotificationItem {
+  id: number;
+  category: string;
+  title: string;
+  body: string;
+  link_path: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface UploadedFileInfo {
+  public_id: string;
+  url: string;
+  mime_type: string;
+  size_bytes: number;
+  original_name: string;
+}
+
+export interface AiSearchMatch {
+  id: string;
+  type: 'page' | 'pathway' | 'module' | 'alumnus' | 'partner' | 'location' | 'report' | 'story' | 'team';
+  title: string;
+  subtitle: string;
+  summary: string;
+  url: string;
+  tags: string[];
+}
+
+export interface AiSearchResponse {
+  ai_available: boolean;
+  unavailable_reason?: string;
+  query: string;
+  answer: string;
+  suggested_follow_ups: string[];
+  matches: AiSearchMatch[];
+}
+
+export interface AiChatResponse {
+  ai_available: boolean;
+  unavailable_reason?: string;
+  reply: string;
+  suggested_links: Array<{ title: string; url: string; type: string }>;
+}
 
 export interface ImpactSummary {
   learners_trained: number;
@@ -132,6 +212,7 @@ export interface AnnualReport {
   countries: number;
   cohorts: number;
   employer_partners: number;
+  is_sample?: boolean;
 }
 
 export interface ImpactStory {
@@ -141,6 +222,7 @@ export interface ImpactStory {
   quote: string;
   attribution: string;
   highlight?: string;
+  is_sample?: boolean;
 }
 
 export interface PublicAlumnus {

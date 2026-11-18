@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
+import { API_BASE_URL } from './api';
+import { useAuthStore } from './store/authStore';
 import Navbar from './components/navbar';
 import Footer from './components/footer';
 import ContactSection from './components/contact';
+import AiSearchModal from './components/AiSearchModal';
+import VisitorChatbot from './components/VisitorChatbot';
 import LoginPage from './auth/login';
 import SignUpPage from './auth/signUp';
 import HomePage from './pages/homePage';
@@ -29,32 +33,48 @@ function readLocation(): LocationState {
 
 function App() {
   const [location, setLocation] = useState<LocationState>(readLocation);
+  const [searchOpen, setSearchOpen] = useState(false);
 
-  // Preserved visitor webhook from initial repository
   useEffect(() => {
-    const sendVisitorWebhook = async () => {
-      try {
-        const response = await fetch(
-          'https://hook.us2.make.com/5yg1flixiqx6xxbip21v5btnbsqifchj',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              timestamp: new Date().toISOString(),
-              new_visitor: true,
-            }),
-          },
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-      } catch (error) {
-        console.error('Webhook failed:', error);
+    const handleGlobalKey = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setSearchOpen((prev) => !prev);
       }
     };
-    sendVisitorWebhook();
+    window.addEventListener('keydown', handleGlobalKey);
+    return () => window.removeEventListener('keydown', handleGlobalKey);
+  }, []);
+
+  useEffect(() => {
+    const recordVisitor = async () => {
+      try {
+        if (window.sessionStorage.getItem('konexio_visitor_pinged')) {
+          return;
+        }
+        window.sessionStorage.setItem('konexio_visitor_pinged', '1');
+        await fetch(`${API_BASE_URL}/api/visitor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            timestamp: new Date().toISOString(),
+            new_visitor: true,
+          }),
+          keepalive: true,
+        });
+      } catch {
+        // Non-blocking visitor ping
+      }
+    };
+    void recordVisitor();
+  }, []);
+
+  useEffect(() => {
+    if (useAuthStore.getState().token) {
+      void useAuthStore.getState().fetchMe();
+    }
   }, []);
 
   useEffect(() => {
@@ -144,11 +164,21 @@ function App() {
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
-      <Navbar currentPath={location.pathname} onNavigate={navigate} />
+      <Navbar
+        currentPath={location.pathname}
+        onNavigate={navigate}
+        onOpenSearch={() => setSearchOpen(true)}
+      />
       <main id="main-content" className="main-content">
         {renderPage()}
       </main>
       <Footer onNavigate={navigate} />
+      <AiSearchModal
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        onNavigate={navigate}
+      />
+      <VisitorChatbot onNavigate={navigate} />
     </div>
   );
 }

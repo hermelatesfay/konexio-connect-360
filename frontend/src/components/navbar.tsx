@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { LogOut, Menu, Shield, User, X } from 'lucide-react';
-import konexioLogo from '../assets/logo.png';
+import { LogOut, Menu, Search, Shield, User, X } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+
+const KONEXIO_LOGO_SRC = '/assets/aistudio/konexio_africa_placeholder_logo_9c0e099e.png';
 
 export type NavItem = {
   label: string;
@@ -22,9 +23,10 @@ const NAV_ITEMS: NavItem[] = [
 type NavbarProps = {
   currentPath: string;
   onNavigate: (path: string) => void;
+  onOpenSearch?: () => void;
 };
 
-const Navbar = ({ currentPath, onNavigate }: NavbarProps) => {
+const Navbar = ({ currentPath, onNavigate, onOpenSearch }: NavbarProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const user = useAuthStore((s) => s.user);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -58,7 +60,7 @@ const Navbar = ({ currentPath, onNavigate }: NavbarProps) => {
             aria-label="Konexio Africa home"
             onClick={() => handleGo('/')}
           >
-            <img src={konexioLogo} alt="Konexio Africa" className="brand-logo" />
+            <img src={KONEXIO_LOGO_SRC} alt="Konexio Africa" className="brand-logo" />
           </button>
 
           <nav className="desktop-nav" aria-label="Main navigation">
@@ -76,6 +78,18 @@ const Navbar = ({ currentPath, onNavigate }: NavbarProps) => {
           </nav>
 
           <div className="header-actions">
+            {onOpenSearch ? (
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                aria-label="Search Konexio Africa (Ctrl+K)"
+                title="Search site & talent (Ctrl+K)"
+                onClick={onOpenSearch}
+              >
+                <Search size={15} aria-hidden="true" />
+                <span>Search</span>
+              </button>
+            ) : null}
             {isAuthenticated && user ? (
               <>
                 {user.role === 'admin' ? (
@@ -160,6 +174,19 @@ const Navbar = ({ currentPath, onNavigate }: NavbarProps) => {
             ))}
 
             <div className="mobile-drawer-actions">
+              {onOpenSearch ? (
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  onClick={() => {
+                    setDrawerOpen(false);
+                    onOpenSearch();
+                  }}
+                >
+                  <Search size={15} aria-hidden="true" />
+                  Search
+                </button>
+              ) : null}
               {isAuthenticated && user ? (
                 <>
                   <button

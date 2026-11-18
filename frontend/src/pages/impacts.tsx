@@ -131,36 +131,51 @@ const ImpactsPage = ({ onNavigate }: ImpactsPageProps) => {
 
   return (
     <div>
-      {/* Section 1: Overview */}
-      <section className="section">
+      {/* Section 1: Impact Hero Banner (hero_impact_79aba9f8.png) + KPI Summary */}
+      <section className="banner-hero-impact">
         <div className="container">
-          <div className="section-header-row">
+          <div className="banner-impact-grid">
             <div>
-              <span className="kicker">
-                Impact Dashboard · Data as of {summary?.as_of ?? '31 October 2026'}
+              <span className="banner-kicker">
+                Impact Dashboard · Reference figures as of {summary?.as_of ?? '31 October 2026'}
               </span>
               <h1 className="page-title">Measured Outcomes &amp; Geographic Footprint</h1>
-              <p className="lead-copy">
+              <p className="banner-lead">
                 Regional totals reconcile across all seven active hubs, eleven training pathways,
-                and five annual reporting periods (with 2026 clearly labelled year-to-date through 31
+                and five annual reporting periods (with 2026 labelled year-to-date through 31
                 October 2026).
               </p>
             </div>
 
-            <button
-              type="button"
-              className="btn btn-outline"
-              onClick={handleDownloadCsv}
-              disabled={locations.length === 0}
-            >
-              <Download size={16} aria-hidden="true" />
-              Download Location CSV
-            </button>
+            <div className="banner-glass-card">
+              <strong style={{ color: 'var(--white)', fontSize: '0.94rem' }}>
+                Verified Multi-Hub Dataset
+              </strong>
+              <p style={{ margin: 0, fontSize: '0.86rem', color: 'rgba(255,255,255,0.85)' }}>
+                {loading || !summary
+                  ? 'Loading reconciled regional metrics across seven cities.'
+                  : `${summary.learners_trained.toLocaleString()} learners trained · ${summary.employment_rate_pct}% employment rate across ${summary.countries} countries.`}
+              </p>
+              <button
+                type="button"
+                className="btn btn-amber btn-sm"
+                style={{ width: 'fit-content' }}
+                onClick={handleDownloadCsv}
+                disabled={locations.length === 0}
+              >
+                <Download size={15} aria-hidden="true" />
+                Download Location CSV
+              </button>
+            </div>
           </div>
+        </div>
+      </section>
 
+      <section className="section-tight">
+        <div className="container">
           {error ? <div className="alert-box alert-error">{error}</div> : null}
 
-          <div className="kpi-strip">
+          <div className="kpi-strip" style={{ marginTop: 0 }}>
             <div className="kpi-card">
               <span className="kpi-value">
                 {loading || !summary ? '—' : summary.learners_trained.toLocaleString()}
@@ -253,7 +268,7 @@ const ImpactsPage = ({ onNavigate }: ImpactsPageProps) => {
               <h3 className="card-title">Annual Learners vs. Graduates &amp; Employment Rate</h3>
               <div className="meta-inline">
                 <span>
-                  <strong style={{ color: 'var(--navy)' }}>Navy:</strong> Learners
+                  <strong style={{ color: 'var(--indigo)' }}>Indigo:</strong> Learners
                 </span>
                 <span>·</span>
                 <span>
@@ -373,7 +388,7 @@ const ImpactsPage = ({ onNavigate }: ImpactsPageProps) => {
           <div className="form-panel">
             <div className="meta-inline" style={{ marginBottom: '16px' }}>
               <span>
-                <strong style={{ color: 'var(--navy)' }}>Navy bar:</strong> Enrolled
+                <strong style={{ color: 'var(--indigo)' }}>Indigo bar:</strong> Enrolled
               </span>
               <span>·</span>
               <span>
@@ -449,9 +464,16 @@ const ImpactsPage = ({ onNavigate }: ImpactsPageProps) => {
             <div className="grid-3" style={{ marginBottom: '28px' }}>
               {impactStories.map((story) => (
                 <article key={story.id} className="card card-cream">
-                  <div className="meta-inline">
-                    <MapPin size={14} aria-hidden="true" />
-                    <strong>{story.city}</strong>
+                  <div className="meta-inline" style={{ justifyContent: 'space-between' }}>
+                    <span className="meta-inline">
+                      <MapPin size={14} aria-hidden="true" />
+                      <strong>{story.city}</strong>
+                    </span>
+                    {story.is_sample !== false ? (
+                      <span className="mono" style={{ fontSize: '0.72rem', color: 'var(--amber-ink)' }}>
+                        Sample Story
+                      </span>
+                    ) : null}
                   </div>
                   <h3 className="card-title">{story.title}</h3>
                   <p className="card-copy" style={{ fontStyle: 'italic' }}>
@@ -529,7 +551,7 @@ const ImpactsPage = ({ onNavigate }: ImpactsPageProps) => {
               <article key={report.year} className="card card-cream">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
                   <span className="mono" style={{ fontSize: '0.8rem', color: 'var(--green-ink)' }}>
-                    Annual Report · {report.year}
+                    Annual Report · {report.year} {report.is_sample !== false ? '(Sample)' : ''}
                   </span>
                   <FileText size={16} aria-hidden="true" style={{ color: 'var(--navy)' }} />
                 </div>

@@ -11,7 +11,6 @@ import {
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
-import communityPhoto from '../assets/images/community_network_1794927726435.jpg';
 import {
   PARTNER_LOGOS,
   fetchAlumni,
@@ -244,38 +243,29 @@ const GetInvolvedPage = ({ onNavigate, initialSearch = '' }: GetInvolvedPageProp
 
   return (
     <>
-      <section className="section-tight section-surface-white">
+      <section className="banner-hero-involved">
         <div className="container">
-          <div className="split-editorial">
-            <div>
-              <span className="kicker">Partnerships &amp; Participation</span>
-              <h1 className="page-title">Get Involved with Konexio Africa</h1>
-              <p className="lead-copy">
-                Partner with us to hire vetted Digi Pass graduates, fund training cohorts,
-                collaborate on technical curriculum delivery, or widen remote work access across
-                seven African hubs.
-              </p>
-              <div className="hero-actions">
-                <a href="#express-interest" className="btn btn-amber">
-                  Express Hiring or Donor Interest
-                  <ArrowRight size={16} aria-hidden="true" />
-                </a>
-                <button
-                  type="button"
-                  className="btn btn-outline"
-                  onClick={() => onNavigate('/signup?type=learner')}
-                >
-                  Apply as a Learner
-                </button>
-              </div>
-            </div>
+          <div className="banner-involved-center">
+            <span className="banner-kicker">Partnerships &amp; Participation</span>
+            <h1 className="page-title">Get Involved with Konexio Africa</h1>
+            <p className="banner-lead">
+              Partner with us to hire vetted Digi Pass graduates, fund training cohorts,
+              collaborate on technical curriculum delivery, or widen remote work access across
+              seven African hubs.
+            </p>
 
-            <div className="photo-frame" style={{ aspectRatio: '4 / 3' }}>
-              <img
-                src={communityPhoto}
-                alt="Konexio Africa graduates and employers collaborating during a partner showcase"
-                referrerPolicy="no-referrer"
-              />
+            <div className="hero-actions">
+              <a href="#express-interest" className="btn btn-amber">
+                Express Hiring or Donor Interest
+                <ArrowRight size={16} aria-hidden="true" />
+              </a>
+              <button
+                type="button"
+                className="btn btn-hero-outline"
+                onClick={() => onNavigate('/signup?type=learner')}
+              >
+                Apply as a Learner
+              </button>
             </div>
           </div>
         </div>
@@ -293,8 +283,11 @@ const GetInvolvedPage = ({ onNavigate, initialSearch = '' }: GetInvolvedPageProp
 
           <div className="grid-2">
             <article className="card">
-              <Briefcase size={24} aria-hidden="true" style={{ color: 'var(--green)' }} />
-              <h3 className="card-title">1. Become an employer or client</h3>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span className="step-index" style={{ marginBottom: 0 }}>PATH 01 · EMPLOYERS &amp; CLIENTS</span>
+                <Briefcase size={22} aria-hidden="true" style={{ color: 'var(--cyan-ink)' }} />
+              </div>
+              <h3 className="card-title">Become an employer or client</h3>
               <p className="card-copy">
                 Recruit trained graduates or commission project freelancers across 11 digital
                 pathways. Filter consent-approved profiles in our Alumni Directory or route a
@@ -315,8 +308,11 @@ const GetInvolvedPage = ({ onNavigate, initialSearch = '' }: GetInvolvedPageProp
             </article>
 
             <article className="card">
-              <HeartHandshake size={24} aria-hidden="true" style={{ color: 'var(--amber-ink)' }} />
-              <h3 className="card-title">2. Become a donor or funding partner</h3>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span className="step-index" style={{ marginBottom: 0 }}>PATH 02 · DONORS &amp; FUNDERS</span>
+                <HeartHandshake size={22} aria-hidden="true" style={{ color: 'var(--amber)' }} />
+              </div>
+              <h3 className="card-title">Become a donor or funding partner</h3>
               <p className="card-copy">
                 Co-fund regional cohorts, women-in-tech access initiatives, or youth employability
                 grants across our seven active cities. Receive structured annual reports and track
@@ -341,8 +337,11 @@ const GetInvolvedPage = ({ onNavigate, initialSearch = '' }: GetInvolvedPageProp
             </article>
 
             <article className="card">
-              <Building2 size={24} aria-hidden="true" style={{ color: 'var(--navy)' }} />
-              <h3 className="card-title">3. Become a training or strategic partner</h3>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span className="step-index" style={{ marginBottom: 0 }}>PATH 03 · TRAINING PARTNERS</span>
+                <Building2 size={22} aria-hidden="true" style={{ color: 'var(--indigo)' }} />
+              </div>
+              <h3 className="card-title">Become a training or strategic partner</h3>
               <p className="card-copy">
                 Co-deliver technical mentorship, host regional training labs, or align local
                 community outreach and certification bridges with our Part I foundations and
@@ -357,8 +356,11 @@ const GetInvolvedPage = ({ onNavigate, initialSearch = '' }: GetInvolvedPageProp
             </article>
 
             <article className="card">
-              <GraduationCap size={24} aria-hidden="true" style={{ color: 'var(--green)' }} />
-              <h3 className="card-title">4. Support digital skills and employment opportunities</h3>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span className="step-index" style={{ marginBottom: 0 }}>PATH 04 · SKILLS &amp; LEARNERS</span>
+                <GraduationCap size={22} aria-hidden="true" style={{ color: 'var(--green)' }} />
+              </div>
+              <h3 className="card-title">Support digital skills and employment opportunities</h3>
               <p className="card-copy">
                 Host mock interviews, provide project briefs for capstone practice, refer youth
                 candidates, or join as an aspiring learner starting Part I Career Readiness.

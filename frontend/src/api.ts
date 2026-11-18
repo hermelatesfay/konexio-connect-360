@@ -1,4 +1,6 @@
 import type {
+  AiChatResponse,
+  AiSearchResponse,
   AnnualReport,
   CourseModule,
   ExpressInterestPayload,
@@ -6,10 +8,15 @@ import type {
   ImpactStory,
   ImpactSummary,
   LocationImpact,
+  NotificationItem,
   PathwayInfo,
   PublicAlumnus,
   PublicPartner,
   PublicTeamMember,
+  TwoFactorEnrollStartPayload,
+  TwoFactorStatusPayload,
+  TwoFactorVerifyResponse,
+  UploadedFileInfo,
   YearlyImpact,
 } from './types';
 
@@ -28,6 +35,18 @@ export const PARTNER_LOGOS: Record<string, string> = {
   partner_10: '/assets/aistudio/partner_10_26b5343c.png',
 };
 
+export class ApiError extends Error {
+  code?: string;
+  status: number;
+
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.code = code;
+  }
+}
+
 async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
@@ -45,7 +64,8 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
         : typeof data?.error === 'string'
           ? data.error
           : 'Request failed. Please try again.';
-    throw new Error(detail);
+    const code = typeof data?.code === 'string' ? data.code : undefined;
+    throw new ApiError(detail, response.status, code);
   }
   return data as T;
 }
@@ -237,11 +257,15 @@ export function updateAdminUserRole(
   token: string,
   userId: number,
   role: string,
+  totpCode?: string,
 ) {
   return apiFetch<{ id: number; role: string }>(`/api/admin/users/${userId}`, {
     method: 'PATCH',
     headers: { Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ role }),
+    body: JSON.stringify({
+      role,
+      ...(totpCode ? { totp_code: totpCode } : {}),
+    }),
   });
 }
 
@@ -260,3 +284,177 @@ export function recordAdminImpactEvent(
     body: JSON.stringify(payload),
   });
 }
+
+export function startTwoFactorEnroll(token: string): Promise<TwoFactorEnrollStartPayload> {
+  return apiFetch('/auth/2fa/enroll/start', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export function verifyTwoFactorEnroll(
+  token: string,
+  code: string,
+): Promise<TwoFactorVerifyResponse> {
+  return apiFetch('/auth/2fa/enroll/verify', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ code }),
+  });
+}
+
+export function verifyTwoFactorChallenge(
+  mfaToken: string,
+  code: string,
+): Promise<TwoFactorVerifyResponse> {
+  return apiFetch('/auth/2fa/verify', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${mfaToken}` },
+    body: JSON.stringify({ code }),
+  });
+}
+
+export function reauthenticateSession(
+  token: string,
+  payload: { password?: string; totp_code?: string },
+): Promise<TwoFactorVerifyResponse> {
+  return apiFetch('/auth/2fa/reauth', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+}
+
+export function disableTwoFactor(
+  token: string,
+  payload: { password: string; totp_code: string },
+): Promise<TwoFactorVerifyResponse> {
+  return apiFetch('/auth/2fa/disable', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+}
+
+export function fetchTwoFactorStatus(token: string): Promise<TwoFactorStatusPayload> {
+  return apiFetch('/auth/2fa/status', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export function changeAccountPassword(
+  token: string,
+  payload: { current_password: string; new_password: string; totp_code?: string },
+): Promise<{ status: string; message: string }> {
+  return apiFetch('/auth/change-password', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+}
+
+export function requestPasswordReset(
+  email: string,
+): Promise<{ status: string; message: string }> {
+  return apiFetch('/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+}
+
+export function confirmPasswordReset(payload: {
+  email: string;
+  reset_code: string;
+  new_password: string;
+}): Promise<{ status: string; message: string }> {
+  return apiFetch('/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function unsubscribeNewsletter(payload: {
+  email: string;
+  list?: 'alumni' | 'donor_partner' | 'all';
+}): Promise<{ status: string; message: string }> {
+  return apiFetch('/api/newsletter/unsubscribe', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateLearnerProgress(
+  token: string,
+  module_code: string,
+  completed: boolean,
+): Promise<{ completed_modules: string[] }> {
+  return apiFetch('/api/dashboard/learner/progress', {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ module_code, completed }),
+  });
+}
+
+export function fetchNotifications(
+  token: string,
+): Promise<{ notifications: NotificationItem[] }> {
+  return apiFetch('/api/notifications', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export function markNotificationRead(
+  token: string,
+  id: number,
+): Promise<{ id: number; is_read: boolean }> {
+  return apiFetch(`/api/notifications/${id}/read`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export function uploadFile(
+  token: string,
+  payload: {
+    purpose: 'alumni_photo' | 'alumni_portfolio' | 'annual_report' | 'partner_logo' | 'general';
+    filename: string;
+    mime_type: string;
+    data_base64: string;
+  },
+): Promise<UploadedFileInfo> {
+  return apiFetch('/api/uploads', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateAdminPathway(
+  token: string,
+  code: string,
+  payload: { status?: 'Available' | 'Completed'; is_active?: boolean },
+): Promise<{ code: string; status: string; is_active: boolean }> {
+  return apiFetch(`/api/admin/pathways/${encodeURIComponent(code)}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+}
+
+export function searchWithAi(query: string): Promise<AiSearchResponse> {
+  return apiFetch('/api/search/ai', {
+    method: 'POST',
+    body: JSON.stringify({ query }),
+  });
+}
+
+export function sendVisitorChat(
+  message: string,
+  history: Array<{ role: 'user' | 'assistant'; content: string }>,
+): Promise<AiChatResponse> {
+  return apiFetch('/api/chat', {
+    method: 'POST',
+    body: JSON.stringify({ message, history }),
+  });
+}
+

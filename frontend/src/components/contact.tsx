@@ -129,25 +129,57 @@ const ContactSection = ({ initialTopic = '', onNavigate }: ContactProps) => {
             </p>
 
             <div className="card" style={{ marginTop: '28px' }}>
-              <ShieldCheck size={20} aria-hidden="true" style={{ color: 'var(--green)' }} />
-              <h2 className="card-title">How Your Message Is Routed</h2>
-              <ul className="submodule-list" style={{ marginTop: 0 }}>
-                <li>
-                  <strong>Training and programmes:</strong> Curriculum, cohorts, and learner admissions
-                </li>
-                <li>
-                  <strong>Partnerships, funding, hiring:</strong> Employer hiring &amp; institutional grants
-                </li>
-                <li>
-                  <strong>Alumni community:</strong> Graduate showcase and consent preferences
-                </li>
-                <li>
-                  <strong>Website or technical problem:</strong> Platform access and account support
-                </li>
-                <li>
-                  <strong>Press and general:</strong> Communications and regional hub requests
-                </li>
-              </ul>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <ShieldCheck size={20} aria-hidden="true" style={{ color: 'var(--cyan-ink)' }} />
+                <h2 className="card-title">How Your Message Is Routed</h2>
+              </div>
+              <div className="numbered-list" style={{ marginTop: '8px' }}>
+                <div className="numbered-row">
+                  <span className="numbered-idx">01</span>
+                  <div>
+                    <strong style={{ color: 'var(--indigo)' }}>Training and programmes</strong>
+                    <div className="card-copy" style={{ fontSize: '0.88rem' }}>
+                      Curriculum, cohorts, and learner admissions
+                    </div>
+                  </div>
+                </div>
+                <div className="numbered-row">
+                  <span className="numbered-idx">02</span>
+                  <div>
+                    <strong style={{ color: 'var(--indigo)' }}>Partnerships, funding, hiring</strong>
+                    <div className="card-copy" style={{ fontSize: '0.88rem' }}>
+                      Employer hiring &amp; institutional grants
+                    </div>
+                  </div>
+                </div>
+                <div className="numbered-row">
+                  <span className="numbered-idx">03</span>
+                  <div>
+                    <strong style={{ color: 'var(--indigo)' }}>Alumni community</strong>
+                    <div className="card-copy" style={{ fontSize: '0.88rem' }}>
+                      Graduate showcase and consent preferences
+                    </div>
+                  </div>
+                </div>
+                <div className="numbered-row">
+                  <span className="numbered-idx">04</span>
+                  <div>
+                    <strong style={{ color: 'var(--indigo)' }}>Website or technical problem</strong>
+                    <div className="card-copy" style={{ fontSize: '0.88rem' }}>
+                      Platform access and account support
+                    </div>
+                  </div>
+                </div>
+                <div className="numbered-row">
+                  <span className="numbered-idx">05</span>
+                  <div>
+                    <strong style={{ color: 'var(--indigo)' }}>Press and general</strong>
+                    <div className="card-copy" style={{ fontSize: '0.88rem' }}>
+                      Communications and regional hub requests
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {onNavigate ? (

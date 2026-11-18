@@ -58,7 +58,7 @@ const TeamsPage = ({ onNavigate }: TeamsPageProps) => {
                     <div
                       className={`avatar avatar-lg${
                         index % 3 === 1
-                          ? ' avatar-green'
+                          ? ' avatar-cyan'
                           : index % 3 === 2
                             ? ' avatar-amber'
                             : ''
@@ -85,7 +85,7 @@ const TeamsPage = ({ onNavigate }: TeamsPageProps) => {
                         margin: '4px 0 0',
                         fontSize: '0.88rem',
                         fontWeight: 700,
-                        color: 'var(--green-ink)',
+                        color: 'var(--cyan-ink)',
                       }}
                     >
                       {member.job_title}

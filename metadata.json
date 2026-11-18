@@ -1,5 +1,8 @@
 {
   "name": "Konexio Connect 360",
   "description": "Konexio Africa Digi Pass platform connecting learners, alumni, employers, and partners across Africa's digital economy.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

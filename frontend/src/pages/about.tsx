@@ -101,26 +101,35 @@ const AboutPage = ({ onNavigate }: AboutPageProps) => {
           </div>
 
           <div className="grid-3">
-            <article className="card">
-              <Target size={22} color="#347A68" aria-hidden="true" />
-              <h3 className="card-title">Mission</h3>
-              <p className="card-copy">
+            <article className="step-card">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span className="step-index" style={{ marginBottom: 0 }}>01 · MISSION</span>
+                <Target size={20} color="#0B6B94" aria-hidden="true" />
+              </div>
+              <h3>Practical Digital Skills</h3>
+              <p>
                 Equip learners with the digital, professional and AI skills they need to work online
                 and build sustainable remote careers.
               </p>
             </article>
-            <article className="card">
-              <Compass size={22} color="#142D42" aria-hidden="true" />
-              <h3 className="card-title">Vision</h3>
-              <p className="card-copy">
+            <article className="step-card">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span className="step-index" style={{ marginBottom: 0 }}>02 · VISION</span>
+                <Compass size={20} color="#1B1D5E" aria-hidden="true" />
+              </div>
+              <h3>Inclusive Remote Access</h3>
+              <p>
                 A digital career for every motivated learner, wherever they start—an inclusive
                 digital economy connecting talent from Nairobi to Dakar.
               </p>
             </article>
-            <article className="card">
-              <ShieldCheck size={22} color="#F0A34A" aria-hidden="true" />
-              <h3 className="card-title">Core Values (EPOCH Framework)</h3>
-              <p className="card-copy">
+            <article className="step-card">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span className="step-index" style={{ marginBottom: 0 }}>03 · VALUES</span>
+                <ShieldCheck size={20} color="#EB8928" aria-hidden="true" />
+              </div>
+              <h3>EPOCH &amp; Consent First</h3>
+              <p>
                 Empathy, Perspective, Openness, Curiosity, and Humility—paired with equity in
                 access (54% women learners) and strict consent-first graduate privacy.
               </p>
@@ -255,7 +264,7 @@ const AboutPage = ({ onNavigate }: AboutPageProps) => {
           <div className="grid-4">
             {locations.map((loc) => (
               <article key={loc.business_id} className="card">
-                <span className="mono" style={{ fontSize: '0.78rem', color: 'var(--green-ink)' }}>
+                <span className="mono" style={{ fontSize: '0.78rem', color: 'var(--cyan-ink)' }}>
                   {loc.business_id} · {loc.country}
                 </span>
                 <h3 className="card-title">{loc.city}</h3>
@@ -319,7 +328,7 @@ const AboutPage = ({ onNavigate }: AboutPageProps) => {
 
           <div className="grid-3">
             <div className="card card-cream">
-              <Layers size={20} color="#142D42" aria-hidden="true" />
+              <Layers size={20} color="#1B1D5E" aria-hidden="true" />
               <h3 className="card-title">Learners</h3>
               <p className="card-copy">
                 Begin your Digi Pass application and explore eleven market-aligned digital tracks.
@@ -334,7 +343,7 @@ const AboutPage = ({ onNavigate }: AboutPageProps) => {
               </button>
             </div>
             <div className="card card-cream">
-              <Briefcase size={20} color="#347A68" aria-hidden="true" />
+              <Briefcase size={20} color="#0B6B94" aria-hidden="true" />
               <h3 className="card-title">Employers &amp; Clients</h3>
               <p className="card-copy">
                 Connect with consented Digi Pass graduates ready for remote contracts and teams.
@@ -349,7 +358,7 @@ const AboutPage = ({ onNavigate }: AboutPageProps) => {
               </button>
             </div>
             <div className="card card-cream">
-              <HeartHandshake size={20} color="#8C4E0B" aria-hidden="true" />
+              <HeartHandshake size={20} color="#944905" aria-hidden="true" />
               <h3 className="card-title">Donors &amp; Partners</h3>
               <p className="card-copy">
                 Sponsor cohorts, contribute mentorship, or host workshops across our seven hubs.

@@ -1,12 +1,13 @@
 import { useState, type FormEvent } from 'react';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
-import { subscribeNewsletter } from '../api';
+import { subscribeNewsletter, unsubscribeNewsletter } from '../api';
 
 type FooterProps = {
   onNavigate: (path: string) => void;
 };
 
 const Footer = ({ onNavigate }: FooterProps) => {
+  const [mode, setMode] = useState<'subscribe' | 'unsubscribe'>('subscribe');
   const [email, setEmail] = useState('');
   const [list, setList] = useState<'alumni' | 'donor_partner'>('alumni');
   const [consent, setConsent] = useState(false);
@@ -22,19 +23,25 @@ const Footer = ({ onNavigate }: FooterProps) => {
     setFeedback(null);
 
     try {
-      const result = await subscribeNewsletter({
-        email,
-        list,
-        consent,
-        website_url: websiteUrlHoneypot,
-      });
-      setEmail('');
-      setConsent(false);
-      setFeedback({ type: 'success', text: result.message });
+      if (mode === 'unsubscribe') {
+        const result = await unsubscribeNewsletter({ email, list });
+        setEmail('');
+        setFeedback({ type: 'success', text: result.message });
+      } else {
+        const result = await subscribeNewsletter({
+          email,
+          list,
+          consent,
+          website_url: websiteUrlHoneypot,
+        });
+        setEmail('');
+        setConsent(false);
+        setFeedback({ type: 'success', text: result.message });
+      }
     } catch (error) {
       setFeedback({
         type: 'error',
-        text: error instanceof Error ? error.message : 'Unable to subscribe right now.',
+        text: error instanceof Error ? error.message : 'Unable to update newsletter preferences right now.',
       });
     } finally {
       setSubmitting(false);
@@ -46,7 +53,13 @@ const Footer = ({ onNavigate }: FooterProps) => {
       <div className="container">
         <div className="footer-grid">
           <div>
-            <h2 className="footer-heading" style={{ fontSize: '1.15rem' }}>
+            <div className="footer-logo-lockup">
+              <img
+                src="/assets/aistudio/konexio_africa_placeholder_logo_9c0e099e.png"
+                alt="Konexio Africa"
+              />
+            </div>
+            <h2 className="footer-heading" style={{ fontSize: '1.05rem', marginBottom: '8px' }}>
               Konexio Africa — Digi Pass
             </h2>
             <p style={{ margin: '0 0 14px', fontSize: '0.9rem', lineHeight: 1.65 }}>
@@ -188,34 +201,53 @@ const Footer = ({ onNavigate }: FooterProps) => {
                 onChange={(e) => setEmail(e.target.value)}
               />
 
-              <label
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '8px',
-                  fontSize: '0.78rem',
-                  color: 'rgba(255,255,255,0.78)',
-                  cursor: 'pointer',
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={consent}
-                  onChange={(e) => setConsent(e.target.checked)}
-                  style={{ marginTop: '3px' }}
-                />
-                <span>I agree to receive updates from Konexio Africa and can unsubscribe anytime.</span>
-              </label>
+              {mode === 'subscribe' ? (
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '8px',
+                    fontSize: '0.78rem',
+                    color: 'rgba(255,255,255,0.78)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={consent}
+                    onChange={(e) => setConsent(e.target.checked)}
+                    style={{ marginTop: '3px' }}
+                  />
+                  <span>I agree to receive updates from Konexio Africa and can unsubscribe anytime.</span>
+                </label>
+              ) : null}
 
-              <button
-                type="submit"
-                className="btn btn-amber btn-sm"
-                disabled={submitting}
-                style={{ width: 'fit-content' }}
-              >
-                {submitting ? 'Subscribing...' : 'Subscribe'}
-                <ArrowRight size={14} aria-hidden="true" />
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <button
+                  type="submit"
+                  className="btn btn-amber btn-sm"
+                  disabled={submitting}
+                  style={{ width: 'fit-content' }}
+                >
+                  {submitting
+                    ? 'Updating...'
+                    : mode === 'unsubscribe'
+                      ? 'Unsubscribe'
+                      : 'Subscribe'}
+                  <ArrowRight size={14} aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  className="footer-link-btn"
+                  style={{ fontSize: '0.78rem', textDecoration: 'underline' }}
+                  onClick={() => {
+                    setMode((prev) => (prev === 'subscribe' ? 'unsubscribe' : 'subscribe'));
+                    setFeedback(null);
+                  }}
+                >
+                  {mode === 'subscribe' ? 'Unsubscribe instead' : 'Back to subscribe'}
+                </button>
+              </div>
 
               {feedback ? (
                 <p
@@ -240,7 +272,7 @@ const Footer = ({ onNavigate }: FooterProps) => {
         </div>
 
         <div className="footer-bottom">
-          <span>© 2026 Konexio Africa Digi Pass</span>
+          <span>© 2026 Konexio Africa Digi Pass · Demonstration dataset &amp; sample reports labeled</span>
          
           <div style={{ display: 'flex', gap: '18px' }}>
             <button

@@ -26,7 +26,7 @@ type ProgrammesPageProps = {
 };
 
 function renderPathwayIcon(code: string) {
-  const props = { size: 20, 'aria-hidden': true as const, style: { color: 'var(--green)' } };
+  const props = { size: 20, 'aria-hidden': true as const, style: { color: 'var(--cyan-ink)' } };
   switch (code) {
     case 'P1':
       return <Megaphone {...props} />;
@@ -138,6 +138,25 @@ const ProgrammesPage = ({ onNavigate }: ProgrammesPageProps) => {
                 alt="Learners participating in a Konexio Africa digital skills workshop"
                 referrerPolicy="no-referrer"
               />
+            </div>
+          </div>
+
+          <div className="grid-2" style={{ marginTop: '40px' }}>
+            <div className="card">
+              <span className="step-index" style={{ marginBottom: 0 }}>PART I · ~3 MONTHS</span>
+              <h2 className="card-title">Core Workplace Readiness (M0–M5)</h2>
+              <p className="card-copy">
+                Hybrid sessions paired with guided WhatsApp chatbot practice to build essential
+                communication, security, cloud tooling, and workplace etiquette before specialization.
+              </p>
+            </div>
+            <div className="card">
+              <span className="step-index" style={{ marginBottom: 0 }}>PART II · 2 MONTHS</span>
+              <h2 className="card-title">Specialized Freelancing Tracks (P1–P11)</h2>
+              <p className="card-copy">
+                Hands-on career tracks combining curated external courses, trainer check-ins, live
+                webinars, and working-professional mentor briefs toward remote readiness.
+              </p>
             </div>
           </div>
         </div>

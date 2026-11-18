@@ -142,7 +142,7 @@ const ImpactMap = ({ locations, compact = false }: ImpactMapProps) => {
                 y1={y}
                 x2={SVG_W}
                 y2={y}
-                stroke="rgba(20, 45, 66, 0.08)"
+                stroke="rgba(27, 29, 94, 0.08)"
                 strokeDasharray="3 4"
               />
             );
@@ -156,14 +156,14 @@ const ImpactMap = ({ locations, compact = false }: ImpactMapProps) => {
                 y1={0}
                 x2={x}
                 y2={SVG_H}
-                stroke="rgba(20, 45, 66, 0.08)"
+                stroke="rgba(27, 29, 94, 0.08)"
                 strokeDasharray="3 4"
               />
             );
           })}
 
-          <path d={continentPath} fill="#FFFFFF" stroke="rgba(20, 45, 66, 0.22)" strokeWidth="1.5" />
-          <path d={madagascarPath} fill="#FFFFFF" stroke="rgba(20, 45, 66, 0.22)" strokeWidth="1.5" />
+          <path d={continentPath} fill="#FFFFFF" stroke="rgba(27, 29, 94, 0.24)" strokeWidth="1.5" />
+          <path d={madagascarPath} fill="#FFFFFF" stroke="rgba(27, 29, 94, 0.24)" strokeWidth="1.5" />
 
           {locations.map((loc) => {
             const { x, y } = projectPoint(loc.latitude, loc.longitude);
@@ -192,8 +192,8 @@ const ImpactMap = ({ locations, compact = false }: ImpactMapProps) => {
                     cx={x}
                     cy={y}
                     r={radius + 6}
-                    fill="rgba(240, 163, 74, 0.28)"
-                    stroke="#F0A34A"
+                    fill="rgba(235, 137, 40, 0.26)"
+                    stroke="#EB8928"
                     strokeWidth="1.5"
                   />
                 ) : null}
@@ -201,9 +201,9 @@ const ImpactMap = ({ locations, compact = false }: ImpactMapProps) => {
                   cx={x}
                   cy={y}
                   r={radius}
-                  fill={isSelected ? '#F0A34A' : '#347A68'}
-                  fillOpacity={0.88}
-                  stroke="#142D42"
+                  fill={isSelected ? '#EB8928' : '#18A4DC'}
+                  fillOpacity={0.9}
+                  stroke="#1B1D5E"
                   strokeWidth="1.5"
                 />
                 <text
@@ -211,7 +211,7 @@ const ImpactMap = ({ locations, compact = false }: ImpactMapProps) => {
                   y={y + labelOffsetY}
                   fontSize="11"
                   fontWeight={isSelected ? '700' : '600'}
-                  fill="#142D42"
+                  fill="#151845"
                   style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
                   {loc.city}
@@ -220,6 +220,38 @@ const ImpactMap = ({ locations, compact = false }: ImpactMapProps) => {
             );
           })}
         </svg>
+
+        <div className="meta-inline" style={{ fontSize: '0.78rem' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <span
+              aria-hidden="true"
+              style={{
+                width: '10px',
+                height: '10px',
+                borderRadius: '50%',
+                background: '#EB8928',
+                border: '1.5px solid #1B1D5E',
+                display: 'inline-block',
+              }}
+            />
+            Selected hub
+          </span>
+          <span aria-hidden="true">·</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <span
+              aria-hidden="true"
+              style={{
+                width: '10px',
+                height: '10px',
+                borderRadius: '50%',
+                background: '#18A4DC',
+                border: '1.5px solid #1B1D5E',
+                display: 'inline-block',
+              }}
+            />
+            Active hub (sized by learners trained)
+          </span>
+        </div>
 
         {activeLocation ? (
           <div className="map-tooltip-card" aria-live="polite">

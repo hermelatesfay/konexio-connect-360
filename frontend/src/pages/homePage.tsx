@@ -15,7 +15,6 @@ import {
   ShieldCheck,
   TrendingUp,
 } from 'lucide-react';
-import heroLearningPhoto from '../assets/images/hero_digital_learning_1794927725402.jpg';
 import mentorshipPhoto from '../assets/images/about_mentorship_1794927725109.jpg';
 import ImpactMap from '../components/ImpactMap';
 import {
@@ -40,7 +39,7 @@ type HomePageProps = {
 };
 
 function renderPathwayIcon(code: string) {
-  const props = { size: 20, 'aria-hidden': true as const, style: { color: 'var(--green)' } };
+  const props = { size: 20, 'aria-hidden': true as const, style: { color: 'var(--cyan-ink)' } };
   switch (code) {
     case 'P1':
       return <Megaphone {...props} />;
@@ -136,16 +135,16 @@ const HomePage = ({ onNavigate }: HomePageProps) => {
 
   return (
     <div>
-      {/* Hero Section */}
-      <section className="hero-section">
+      {/* Hero Section with hero_home_1_edb06057.png Full-Width Background & Overlaid Copy/CTAs */}
+      <section className="banner-hero-home">
         <div className="container">
-          <div className="hero-grid">
-            <div className="hero-copy-col">
-              <span className="kicker">Konexio Africa · Digi Pass Programme</span>
+          <div className="banner-hero-home-grid">
+            <div>
+              <span className="banner-kicker">Konexio Africa · Digi Pass Programme</span>
               <h1 className="hero-title">
                 Building Digital Skills. Unlocking African Potential.
               </h1>
-              <p className="lead-copy">
+              <p className="banner-lead">
                 We equip youth, women, and displaced talent across seven African hubs with practical
                 digital skills, career readiness, and direct pathways into remote employment and
                 freelancing.
@@ -154,7 +153,7 @@ const HomePage = ({ onNavigate }: HomePageProps) => {
               <div className="hero-actions">
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="btn btn-amber"
                   onClick={() => onNavigate('/programmes')}
                 >
                   Explore Programmes
@@ -162,43 +161,44 @@ const HomePage = ({ onNavigate }: HomePageProps) => {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-outline"
+                  className="btn btn-hero-outline"
                   onClick={() => onNavigate('/impact')}
                 >
                   Discover Our Impact
                 </button>
               </div>
-
-              <div className="hero-meta-line">
-                <span>7 African hubs</span>
-                <span aria-hidden="true">·</span>
-                <span>11 Digi Pass pathways</span>
-                <span aria-hidden="true">·</span>
-                <span>18 completed cohorts</span>
-              </div>
             </div>
 
-            <div className="hero-media-frame">
-              <img
-                src={heroLearningPhoto}
-                alt="Young African professionals collaborating with laptops in a modern Konexio Africa training studio"
-                referrerPolicy="no-referrer"
-              />
-              <div className="hero-media-caption">
-                <strong>Training connected to remote employment</strong>
-                <span>Part I workplace readiness and Part II specialized digital careers</span>
+            <div className="banner-glass-card">
+              <strong style={{ color: 'var(--white)', fontSize: '0.98rem' }}>
+                Training connected to remote employment
+              </strong>
+              <p style={{ margin: 0, fontSize: '0.88rem', color: 'rgba(255,255,255,0.86)' }}>
+                Part I workplace readiness and Part II specialized digital careers across seven East
+                and West African hubs.
+              </p>
+              <div className="banner-meta-line">
+                <span>7 African hubs</span>
+                <span aria-hidden="true">·</span>
+                <span>11 pathways</span>
+                <span aria-hidden="true">·</span>
+                <span>18 cohorts</span>
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
+      <section className="section-tight" style={{ paddingBottom: '28px' }}>
+        <div className="container">
           {error ? (
-            <div className="alert-box alert-error" style={{ marginTop: '24px' }}>
+            <div className="alert-box alert-error" style={{ marginBottom: '24px' }}>
               {error}
             </div>
           ) : null}
 
-          {/* Dashboard-style Sample Impact Section */}
-          <div style={{ marginTop: '36px' }}>
+          {/* Dashboard-style Impact Section */}
+          <div>
             <div
               style={{
                 display: 'flex',
@@ -209,8 +209,8 @@ const HomePage = ({ onNavigate }: HomePageProps) => {
                 flexWrap: 'wrap',
               }}
             >
-              <span className="mono" style={{ fontSize: '0.78rem', color: 'var(--green-ink)', fontWeight: 600 }}>
-                Impact Overview · Data as of {summary?.as_of ?? '31 October 2026'}
+              <span className="mono" style={{ fontSize: '0.78rem', color: 'var(--cyan-ink)', fontWeight: 600 }}>
+                Impact Overview · As of {summary?.as_of ?? '31 October 2026'} · Demonstration dataset
               </span>
               <button
                 type="button"
@@ -286,6 +286,37 @@ const HomePage = ({ onNavigate }: HomePageProps) => {
                 (Part II). Graduates showcase verified portfolios to employers and clients across
                 Africa and globally.
               </p>
+
+              <div className="numbered-list">
+                <div className="numbered-row">
+                  <span className="numbered-idx">01</span>
+                  <div>
+                    <strong style={{ color: 'var(--indigo)' }}>Part I Workplace Foundations</strong>
+                    <div className="card-copy" style={{ fontSize: '0.88rem' }}>
+                      Six core readiness modules (M0–M5) with studio sessions and WhatsApp practice.
+                    </div>
+                  </div>
+                </div>
+                <div className="numbered-row">
+                  <span className="numbered-idx">02</span>
+                  <div>
+                    <strong style={{ color: 'var(--indigo)' }}>Part II Career Specialisation</strong>
+                    <div className="card-copy" style={{ fontSize: '0.88rem' }}>
+                      Eleven remote-work tracks (P1–P11) guided by mentors and client project briefs.
+                    </div>
+                  </div>
+                </div>
+                <div className="numbered-row">
+                  <span className="numbered-idx">03</span>
+                  <div>
+                    <strong style={{ color: 'var(--indigo)' }}>Consent-First Talent Matching</strong>
+                    <div className="card-copy" style={{ fontSize: '0.88rem' }}>
+                      Direct employer introductions coordinated without exposing personal contact emails.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="hero-actions">
                 <button
                   type="button"
@@ -539,25 +570,44 @@ const HomePage = ({ onNavigate }: HomePageProps) => {
         </div>
       </section>
 
-      {/* 6. Strong Get Involved Section */}
+      {/* 6. Strong Get Involved Section with hero_home_2_28d3aeba.png Overlaid Callout Banner */}
       <section className="section section-surface-navy">
         <div className="container">
-          <div className="section-header-row">
-            <div>
-              <span className="kicker">Get Involved</span>
-              <h2 className="section-title">
-                Partner, hire, or train with Konexio Africa.
-              </h2>
-              <p className="lead-copy">
-                Choose the pathway suited to your goals—whether launching your own digital career
-                or hiring Digi Pass graduates.
-              </p>
+          <div className="banner-callout-home">
+            <div className="banner-callout-inner">
+              <div style={{ maxWidth: '640px' }}>
+                <span className="banner-kicker">Get Involved · Konexio Connect</span>
+                <h2 className="section-title">
+                  Partner, hire, or train with Konexio Africa.
+                </h2>
+                <p className="banner-lead" style={{ marginTop: '10px', fontSize: '0.98rem' }}>
+                  Choose the pathway suited to your goals—whether hiring vetted Digi Pass graduates,
+                  co-funding a cohort, or launching your digital career.
+                </p>
+              </div>
+              <div className="hero-actions" style={{ marginTop: 0 }}>
+                <button
+                  type="button"
+                  className="btn btn-amber"
+                  onClick={() => onNavigate('/get-involved#express-interest')}
+                >
+                  Partner With Us
+                  <ArrowRight size={16} aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-hero-outline"
+                  onClick={() => onNavigate('/signup?type=learner')}
+                >
+                  Apply as a Learner
+                </button>
+              </div>
             </div>
           </div>
 
           <div className="grid-3">
             <div className="kpi-card" style={{ gap: '12px' }}>
-              <Briefcase size={20} color="#F0A34A" aria-hidden="true" />
+              <Briefcase size={20} color="#EB8928" aria-hidden="true" />
               <strong style={{ fontSize: '1.05rem' }}>For Employers &amp; Clients</strong>
               <p style={{ margin: 0, fontSize: '0.88rem', color: 'rgba(255,255,255,0.86)' }}>
                 Filter consented alumni profiles by pathway or express hiring interest with a 3-day
@@ -574,7 +624,7 @@ const HomePage = ({ onNavigate }: HomePageProps) => {
             </div>
 
             <div className="kpi-card" style={{ gap: '12px' }}>
-              <Globe2 size={20} color="#F0A34A" aria-hidden="true" />
+              <Globe2 size={20} color="#18A4DC" aria-hidden="true" />
               <strong style={{ fontSize: '1.05rem' }}>For Donors &amp; Partners</strong>
               <p style={{ margin: 0, fontSize: '0.88rem', color: 'rgba(255,255,255,0.86)' }}>
                 Support scholarships, laptops, and regional cohort expansion backed by transparent
@@ -591,7 +641,7 @@ const HomePage = ({ onNavigate }: HomePageProps) => {
             </div>
 
             <div className="kpi-card" style={{ gap: '12px' }}>
-              <ShieldCheck size={20} color="#F0A34A" aria-hidden="true" />
+              <ShieldCheck size={20} color="#EB8928" aria-hidden="true" />
               <strong style={{ fontSize: '1.05rem' }}>For Prospective Learners</strong>
               <p style={{ margin: 0, fontSize: '0.88rem', color: 'rgba(255,255,255,0.86)' }}>
                 Apply to start Part I workplace readiness and advance into one of 11 specialized

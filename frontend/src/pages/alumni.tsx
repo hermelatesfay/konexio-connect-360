@@ -225,7 +225,7 @@ const AlumniPage = ({ onNavigate, initialSearch = '', businessId }: AlumniPagePr
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
                 <div
-                  className={`avatar avatar-lg${profile.consent_to_show_photo ? ' avatar-green' : ''}`}
+                  className={`avatar avatar-lg${profile.consent_to_show_photo ? ' avatar-cyan' : ''}`}
                   aria-hidden="true"
                 >
                   {profile.initials}
@@ -615,7 +615,7 @@ const AlumniPage = ({ onNavigate, initialSearch = '', businessId }: AlumniPagePr
                 <article key={alum.business_id} className="card">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                     <div
-                      className={`avatar${alum.consent_to_show_photo ? ' avatar-green' : ''}`}
+                      className={`avatar${alum.consent_to_show_photo ? ' avatar-cyan' : ''}`}
                       aria-hidden="true"
                     >
                       {alum.initials}

@@ -1,5 +1,5 @@
 import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react';
-import { ArrowRight, UserPlus } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, UserPlus } from 'lucide-react';
 import { fetchProgrammes } from '../api';
 import { useAuthStore } from '../store/authStore';
 import type { PathwayInfo } from '../types';
@@ -54,6 +54,7 @@ const SignUpPage = ({ onNavigate, initialSearch = '' }: SignUpPageProps) => {
   const clearError = useAuthStore((state) => state.clearError);
 
   const [registrationType, setRegistrationType] = useState<RegistrationType | ''>(preselectedType);
+  const [showPassword, setShowPassword] = useState(false);
   const [pathways, setPathways] = useState<PathwayInfo[]>([]);
   const [form, setForm] = useState<SignUpForm>({
     first_name: '',
@@ -178,6 +179,15 @@ const SignUpPage = ({ onNavigate, initialSearch = '' }: SignUpPageProps) => {
     <section className="auth-shell">
       <div className="container" style={{ maxWidth: '780px' }}>
         <div className="form-panel">
+          <div className="auth-brand-bar">
+            <img
+              src="/assets/aistudio/konexio_africa_placeholder_logo_9c0e099e.png"
+              alt="Konexio Africa"
+            />
+            <span className="mono" style={{ fontSize: '0.78rem', color: 'var(--slate)' }}>
+              Digi Pass Registration
+            </span>
+          </div>
           <span className="kicker">Create Account</span>
           <h1 className="page-title" style={{ marginBottom: '8px' }}>
             Join Konexio Africa
@@ -252,17 +262,28 @@ const SignUpPage = ({ onNavigate, initialSearch = '' }: SignUpPageProps) => {
                 </div>
                 <div className="field-group">
                   <label htmlFor="signup-password">Password (min 8 characters)</label>
-                  <input
-                    id="signup-password"
-                    type="password"
-                    name="password"
-                    className="input-control"
-                    value={form.password}
-                    onChange={handleChange}
-                    required
-                    minLength={8}
-                    placeholder="At least 8 characters"
-                  />
+                  <div className="password-input-wrap">
+                    <input
+                      id="signup-password"
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      autoComplete="new-password"
+                      className="input-control"
+                      value={form.password}
+                      onChange={handleChange}
+                      required
+                      minLength={8}
+                      placeholder="At least 8 characters"
+                    />
+                    <button
+                      type="button"
+                      className="password-toggle-btn"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
+                      {showPassword ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
+                    </button>
+                  </div>
                 </div>
               </div>
 

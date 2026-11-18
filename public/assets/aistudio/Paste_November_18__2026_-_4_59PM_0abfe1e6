@@ -1,0 +1,803 @@
+# KONEXIO AFRICA — BACKEND, DATABASE, AI SEARCH, CHATBOT, SECURITY AND PRODUCTION READINESS
+
+Continue working on my existing Konexio Africa website project that I imported from GitHub into Google AI Studio.
+
+I want to transform the existing project into a professional, functional, secure, data-driven website with a reliable backend, persistent database, AI-powered visitor search, chatbot, authentication, role-based dashboards, and a proper data backup and recovery strategy.
+
+This is an extension and improvement of the existing project, NOT a request to create a completely new website.
+
+## 1. FIRST: INSPECT THE EXISTING PROJECT
+
+Before making changes:
+
+- Inspect the complete project structure.
+- Identify the existing frontend framework, programming language, routing, components, authentication, backend, database, API endpoints, environment variables, and installed dependencies.
+- Identify which pages and features already work.
+- Identify which pages still use static sample data, hardcoded arrays, mock authentication, or placeholder API functions.
+- Identify any existing database or backend connection.
+- Identify existing forms, dashboards, user roles, alumni profiles, pathways, partner information, impact statistics, and notification functionality.
+- Identify the current deployment configuration.
+- Identify any existing security vulnerabilities, exposed secrets, missing validation, or unsafe access controls.
+
+Preserve the existing working code, visual design, page structure, and functionality wherever possible.
+
+Do not unnecessarily replace the current framework, rewrite the entire application, or remove working pages.
+
+If a backend or database already exists, inspect it and determine whether it should be improved or integrated with Supabase.
+
+If no suitable persistent backend exists, use Supabase with PostgreSQL, Supabase Auth, Supabase Storage, and Row Level Security, provided it is compatible with the existing project.
+
+Do not create a second conflicting backend.
+
+Do not claim that a database, API, authentication provider, AI provider, or hosting service is connected unless it has actually been configured and verified.
+
+## 2. BACKEND AND DATABASE
+
+Implement a real backend suitable for a nonprofit education, digital skills, alumni, impact, and employer-engagement platform.
+
+Preferred backend:
+
+- Supabase PostgreSQL for persistent relational data.
+- Supabase Auth for authentication.
+- Supabase Storage for images and documents.
+- Row Level Security for database access control.
+- Secure backend functions or API endpoints for protected operations.
+- The existing frontend framework and routing.
+
+If the existing project uses a different working backend, preserve it when appropriate and explain the architecture.
+
+The application must not depend on browser localStorage, sessionStorage, hardcoded JavaScript arrays, temporary objects, or mock data as the primary storage for real user information.
+
+Browser storage may be used only for appropriate temporary preferences, interface state, or non-sensitive convenience data.
+
+All important user-generated information must be saved to the persistent backend.
+
+## 3. DATABASE DESIGN
+
+Inspect the supplied project data and existing database before designing the schema.
+
+Create a normalized and maintainable database structure appropriate for the application.
+
+Potential tables include:
+
+- profiles
+- user_roles
+- alumni_profiles
+- alumni_skills
+- pathways
+- locations
+- impact_metrics
+- partners
+- team_members
+- interest_submissions
+- newsletter_subscriptions
+- consent_records
+- notifications
+- chat_sessions
+- chat_messages
+
+Use these names where appropriate, but do not create unnecessary tables or duplicate existing structures.
+
+For every table:
+
+- Define appropriate primary keys.
+- Define foreign keys where relationships exist.
+- Use appropriate data types.
+- Add required fields and validation constraints.
+- Add timestamps such as created_at and updated_at.
+- Add indexes for frequently searched fields.
+- Use transactions for operations involving multiple related records.
+- Preserve relationships between alumni, skills, pathways, locations, consent, and submissions.
+- Add appropriate deletion and retention behavior.
+- Avoid destructive cascading deletion of important records.
+- Use soft deletion or archival where appropriate for important records.
+- Prevent duplicate submissions where appropriate.
+- Preserve existing production information during schema changes.
+
+Create database migration files or the appropriate migration mechanism for the existing stack.
+
+Do not run destructive database resets on production.
+
+Do not delete or overwrite existing tables or records just to simplify implementation.
+
+## 4. CONNECT THE EXISTING WEBSITE TO REAL DATA
+
+Review all existing pages and replace hardcoded data with database queries where appropriate.
+
+Connect:
+
+- Homepage impact statistics.
+- Alumni directory.
+- Alumni profile pages.
+- Alumni skill and pathway information.
+- Training locations.
+- Pathway pages.
+- Team profiles.
+- Partners and donors.
+- Employer and client interest forms.
+- Newsletter subscription forms.
+- Administrator dashboard.
+- Alumni dashboard.
+- Employer/client dashboard.
+- Donor/partner dashboard.
+- Notifications.
+- Impact and annual report information.
+
+Use loading, empty, success, and error states.
+
+If the database is unavailable, display a clear error or retry state.
+
+Do not silently replace failed database requests with fabricated data.
+
+Use approved sample data only for a clearly identified demonstration or development environment.
+
+Never insert sample records into production automatically.
+
+## 5. DATA PACKET INTEGRATION
+
+Use the supplied Konexio Africa hackathon data packet and existing project files as the primary source for the provided sample content.
+
+Inspect the actual data files and preserve their field names, relationships, consent values, reporting dates, and terminology.
+
+Integrate the provided information appropriately into the database and website.
+
+The data packet contains fictional/sample records and placeholder images. Clearly label sample information as demonstration content.
+
+Do not present fictional alumni, team members, partners, donor records, impact figures, testimonials, or annual reports as verified real-world information.
+
+Do not invent additional impact figures, alumni details, partner names, testimonials, or contact information.
+
+Preserve the existing privacy requirements:
+
+- Exclude alumni records with consent_to_publish set to FALSE from all public pages, public search, chatbot results, public API responses, and matching.
+- Do not display a profile photo when consent_to_show_photo is FALSE.
+- Do not expose private_notification_email or role_mailbox in public pages, source code, API responses, search results, chatbot responses, or browser network responses.
+- Use private notification addresses only within authorized backend notification logic.
+- Discard honeypot submissions silently.
+- Do not forward submissions to alumni when consent_to_be_contacted is FALSE.
+- Keep alumni and donor/partner newsletter subscriptions separate.
+- Respect consent dates and unsubscribe status.
+- Clearly label sample annual reports and sample stories.
+- Do not expose private or unpublished records through AI search.
+
+## 6. PERSISTENT DATA STORAGE
+
+All important information must be stored in persistent backend storage.
+
+The website must save:
+
+- User accounts and profiles.
+- Alumni profile updates.
+- Skills and pathways.
+- Interest form submissions.
+- Newsletter subscriptions.
+- Consent records.
+- Partner and donor records.
+- Team information.
+- Notifications.
+- Approved impact data.
+- Administrative changes.
+- Any other important user-generated information.
+
+A successful form submission must be saved in the database before the interface displays a success message.
+
+Do not show success if the backend save failed.
+
+Use server-side validation and appropriate database constraints.
+
+Ensure the data remains available after:
+
+- Browser refresh.
+- User logout and login.
+- Application restart.
+- Website redeployment.
+- Opening the website on another device.
+- Updating frontend code.
+
+Do not tie production data to a temporary AI Studio session or development environment.
+
+Do not store production user information only in the frontend.
+
+## 7. DATA BACKUP AND RECOVERY
+
+Implement and document a realistic backup and recovery strategy.
+
+Use the backup and recovery capabilities available for the selected backend and hosting plan.
+
+Requirements:
+
+- Enable available managed database backups.
+- Verify backup frequency and retention.
+- Configure independent protected backups of important database information where feasible.
+- Include important uploaded files in the backup strategy.
+- Keep backups separate from the primary production database.
+- Protect backups from unauthorized access.
+- Document how to restore the database.
+- Document how to restore files.
+- Document recovery steps for accidental deletion.
+- Test database restoration before production launch.
+- Test that restored data is usable by the application.
+- Avoid deploying changes that automatically erase production records.
+- Use database migrations and safe schema changes.
+- Add monitoring for database and storage failures.
+- Document backup limitations based on the selected provider and plan.
+
+Do not claim that the system has zero data-loss risk.
+
+Do not claim that backups are configured, tested, or working unless the actual service configuration has been verified.
+
+If backup configuration requires account access, credentials, a paid plan, or manual action, explain precisely what remains to be done.
+
+## 8. AI-POWERED VISITOR SEARCH
+
+Add an AI-powered search experience that allows visitors to ask questions in natural language.
+
+Example questions:
+
+- What is Konexio Africa?
+- What does Digi Pass teach?
+- Which digital skills pathways are available?
+- Where does Konexio operate?
+- How can someone become a learner?
+- Which approved alumni have a particular skill?
+- How can an employer connect with alumni?
+- How can someone become a donor or partner?
+- Where can I find annual reports?
+- How can I contact the organization?
+
+The search should:
+
+- Search approved website content.
+- Search published programme information.
+- Search approved pathways and locations.
+- Search approved public alumni profiles only.
+- Search approved reports and relevant public documents.
+- Return relevant links to website pages.
+- Use actual database records where appropriate.
+- Respect publication consent.
+- Exclude private data.
+- Exclude unpublished submissions.
+- Avoid returning administrator-only information.
+
+Use the existing search component if one already exists.
+
+Create a polished search interface with:
+
+- A clear search input.
+- Natural-language search support.
+- Search suggestions.
+- Loading state.
+- Search results.
+- Empty state.
+- Error state.
+- Relevant page links.
+- Responsive layout.
+
+If semantic/vector search is suitable, use a supported PostgreSQL vector search implementation or another compatible search solution.
+
+Do not introduce unnecessary infrastructure if ordinary database search and AI-assisted retrieval are sufficient for the current project.
+
+## 9. AI CHATBOT FOR WEBSITE VISITORS
+
+Add a professional AI chatbot that helps visitors understand the website and find information.
+
+The chatbot should be accessible through a floating chat button and a dedicated search/chat entry point.
+
+The chatbot should support:
+
+- Asking questions about Konexio Africa.
+- Understanding programme descriptions.
+- Finding pathways.
+- Finding training locations.
+- Finding approved alumni profiles.
+- Explaining how to become a learner.
+- Explaining how employers can connect with alumni.
+- Explaining how donors and partners can engage.
+- Finding reports and relevant pages.
+- Providing relevant website links.
+- Suggesting useful next steps.
+- Directing visitors to the appropriate form or contact page.
+
+Design a clean, modern chat interface with:
+
+- Welcome message.
+- Suggested questions.
+- Message input.
+- Send button.
+- Loading indicator.
+- Response display.
+- Error handling.
+- Clear conversation state.
+- Mobile-friendly layout.
+- Accessible controls.
+- A way to close or minimize the chat.
+
+Do not make the chatbot obstruct the main website content.
+
+## 10. AI PROVIDER AND SECURE BACKEND INTEGRATION
+
+Use an AI provider such as OpenAI only if the project can be configured with a valid API key and supported model.
+
+The AI integration must happen through a secure backend endpoint or server-side function.
+
+Never expose AI provider secret keys in:
+
+- Frontend JavaScript.
+- Public environment variables.
+- HTML.
+- Browser network responses.
+- GitHub commits.
+- Client-side application bundles.
+
+Use secure server-side environment variables or the provider's supported secret management.
+
+Create a backend endpoint for chatbot requests.
+
+The endpoint must:
+
+1. Validate the visitor's request.
+2. Apply reasonable request size limits.
+3. Apply rate limiting or abuse protection.
+4. Retrieve approved relevant website information.
+5. Exclude private or unpublished information.
+6. Send only necessary context to the AI provider.
+7. Generate an answer based on the retrieved content.
+8. Return the answer and relevant links.
+9. Handle provider errors and timeouts.
+10. Avoid exposing secrets or internal errors.
+
+Use retrieval-augmented generation where suitable.
+
+The chatbot must:
+
+- Use the provided website content as its knowledge source.
+- Prefer retrieved information over general model knowledge.
+- Avoid inventing facts.
+- Avoid inventing alumni, partners, programme details, statistics, or contact information.
+- Say when information is unavailable.
+- Provide links to relevant website pages.
+- Respect all consent and publication rules.
+- Never reveal private emails, private submissions, administrator records, or role mailboxes.
+- Never perform administrator actions.
+- Never assign roles.
+- Never bypass authentication.
+- Never reveal backend secrets.
+- Never claim that an email or notification was sent unless the backend confirms it.
+
+If the AI provider is not configured, display a useful fallback message and provide normal website search and navigation.
+
+Do not simulate a working AI integration using hardcoded chatbot answers and present it as a live AI service.
+
+## 11. CHATBOT DATA PRIVACY
+
+The public chatbot must only access approved public content.
+
+Do not give the chatbot unrestricted access to the entire database.
+
+Create a dedicated retrieval layer that returns only approved fields and records.
+
+Do not allow public chatbot requests to execute arbitrary SQL.
+
+Do not allow the chatbot to query private tables directly.
+
+Do not allow visitors to retrieve:
+
+- Passwords.
+- Authentication tokens.
+- Private email addresses.
+- Role mailboxes.
+- Private notifications.
+- Unpublished alumni profiles.
+- Unpublished submissions.
+- Administrator records.
+- Internal routing rules.
+- Private consent information.
+- Database credentials.
+- API keys.
+
+Do not store chatbot conversations by default unless there is a clear business need.
+
+If conversation history is stored, define:
+
+- What is stored.
+- Why it is stored.
+- Who can access it.
+- How long it is retained.
+- How it can be deleted.
+- How sensitive information is protected.
+
+Provide a clear privacy notice for the chatbot.
+
+## 12. AUTHENTICATION AND ROLE-BASED ACCESS
+
+Preserve the requirement to completely remove Quick Role Access.
+
+Remove:
+
+- Quick Role Access sections.
+- Demo role shortcuts.
+- Role-selection login shortcuts.
+- Fake authentication.
+- Buttons that enter dashboards without authenticating.
+- Any frontend mechanism that allows a visitor to choose an administrator role.
+- Any insecure route bypass.
+
+Create a professional authentication system.
+
+Support the appropriate user roles:
+
+- Alumni.
+- Employer/Client.
+- Prospective Learner.
+- Donor/Partner.
+- Administrator.
+
+Use secure authentication.
+
+After authentication:
+
+- Retrieve the user's role from a trusted backend record.
+- Verify the role server-side.
+- Redirect the user to the correct dashboard.
+- Protect dashboard routes.
+- Protect backend operations.
+- Prevent users from changing their own privileged roles.
+- Prevent public registration from creating administrator accounts.
+
+Do not rely only on frontend route guards.
+
+Use database policies and backend authorization.
+
+## 13. TWO-FACTOR AUTHENTICATION
+
+Preserve and implement the administrator two-factor authentication requirement.
+
+Use the authentication provider's supported MFA implementation, such as Supabase Auth TOTP MFA if Supabase is the selected authentication provider.
+
+Requirements:
+
+- Secure enrollment.
+- QR code setup.
+- Verification before enabling MFA.
+- Login challenge.
+- Proper recovery process.
+- Server-side assurance-level verification.
+- Enforcement for administrator access.
+- Re-verification before sensitive operations where appropriate.
+
+Do not store TOTP secrets in frontend code.
+
+Do not implement fake OTP verification.
+
+Do not claim MFA is enabled until the provider confirms successful enrollment and verification.
+
+If the provider is not configured, clearly explain the required setup.
+
+## 14. USER ROLES AND PERMISSIONS
+
+Implement server-enforced permissions.
+
+Public visitors:
+
+- View approved public pages.
+- Use public search.
+- Use the public chatbot.
+- Submit appropriate public forms.
+
+Alumni:
+
+- View their dashboard.
+- Update permitted profile fields.
+- Manage their own profile information.
+- Manage publication consent where supported.
+- Access their own notifications.
+
+Employers/Clients:
+
+- Access their own dashboard.
+- Submit legitimate interest requests.
+- View approved public alumni information.
+- Use authorized contact functionality.
+
+Donors/Partners:
+
+- Access appropriate engagement information.
+- Submit donor or partnership inquiries.
+- Access approved reports and public information.
+
+Administrators:
+
+- Manage approved website content.
+- Manage users and roles with authorization.
+- Manage submissions.
+- Manage published content.
+- Access administrative functionality only after completing required MFA.
+
+Enforce permissions in backend APIs and database policies.
+
+## 15. FORMS, NOTIFICATIONS, AND EMAIL
+
+Connect existing forms to persistent backend storage.
+
+Ensure that:
+
+- Required fields are validated.
+- Email addresses are validated.
+- Consent is recorded.
+- Honeypot spam protection is enforced.
+- Submissions are saved.
+- Submission errors are shown.
+- Successful submissions receive confirmation.
+- Duplicate or abusive submissions are handled.
+- Private contact details are protected.
+
+Implement the provided routing rules.
+
+Do not forward a submission to alumni if contact consent is false.
+
+Do not expose private notification addresses.
+
+If an email provider is configured, use secure backend email sending.
+
+If email is not configured, save the submission and display an honest confirmation that the inquiry was received, without claiming that an email was sent.
+
+Never claim that an email, notification, or newsletter was sent unless the actual service confirms success.
+
+## 16. FILE STORAGE
+
+Use persistent file storage for:
+
+- Approved alumni photos.
+- Approved team photos.
+- Partner logos.
+- Annual reports.
+- Documents.
+- Other supported uploads.
+
+Use appropriate public or private storage policies.
+
+Public files must be approved for publication.
+
+Private files must require authorization.
+
+Do not store sensitive files in publicly accessible buckets.
+
+Do not expose private storage URLs.
+
+Validate file type and size.
+
+Use safe upload handling.
+
+Preserve existing placeholder images where appropriate, but clearly identify sample and placeholder assets.
+
+Do not invent official logos or claim that placeholder graphics are approved brand assets.
+
+## 17. ADMINISTRATOR DASHBOARD
+
+Create or improve a secure administrative dashboard for managing:
+
+- Alumni profiles.
+- Alumni skills.
+- Pathways.
+- Locations.
+- Partners.
+- Team profiles.
+- Impact statistics.
+- Interest submissions.
+- Newsletter subscriptions.
+- Consent records.
+- Published content.
+- Notifications.
+- AI search content where appropriate.
+
+Use database-backed information.
+
+Add:
+
+- Search.
+- Filtering.
+- Sorting.
+- Pagination.
+- Validation.
+- Loading states.
+- Error states.
+- Confirmation before destructive actions.
+- Appropriate access restrictions.
+
+Record important administrative changes where appropriate.
+
+Do not allow unauthorized users to access administrator functionality.
+
+## 18. FRONTEND DESIGN AND USER EXPERIENCE
+
+Preserve the existing Konexio Africa visual direction and improve it professionally.
+
+Maintain:
+
+- Responsive design.
+- Accessible navigation.
+- Consistent typography.
+- Appropriate spacing.
+- Clear page hierarchy.
+- Professional forms.
+- Consistent buttons.
+- Useful loading states.
+- Clear error states.
+- Meaningful empty states.
+- Accessible dialogs.
+- Mobile-friendly dashboards.
+- Polished AI search and chatbot interfaces.
+
+Do not replace the existing design with a generic template.
+
+Keep the approved banner placements and existing page requirements.
+
+Do not remove existing working content merely to simplify the design.
+
+## 19. SECURITY REQUIREMENTS
+
+Review the application for:
+
+- Exposed API keys.
+- Insecure authentication.
+- Public access to private database records.
+- Missing Row Level Security.
+- Missing authorization checks.
+- Unsafe database queries.
+- Cross-site scripting risks.
+- Unvalidated form input.
+- Unsafe file uploads.
+- Missing rate limits.
+- Insecure role assignment.
+- Public private-email exposure.
+- Unprotected administrator routes.
+- Insecure chatbot data access.
+- Unsafe environment variable usage.
+
+Use:
+
+- HTTPS.
+- Secure server-side secrets.
+- Database policies.
+- Input validation.
+- Output encoding.
+- Appropriate rate limiting.
+- Secure authentication.
+- MFA for administrators.
+- Least-privilege access.
+- Safe error messages.
+- Appropriate audit logging.
+
+Do not place secrets in GitHub.
+
+Provide an environment variable example file containing variable names only, with no real secrets.
+
+## 20. DEPLOYMENT AND PRODUCTION DATA
+
+Prepare the application for deployment using the existing framework and a compatible hosting provider.
+
+Separate development and production environments.
+
+Use separate environment variables and database configuration.
+
+Do not use development sample data as production user data.
+
+Do not automatically reset the production database during deployment.
+
+Do not overwrite production records with local sample data.
+
+Use safe database migrations.
+
+Explain:
+
+- Where the frontend will be hosted.
+- Where the backend runs.
+- Where the database is stored.
+- Where uploaded files are stored.
+- How authentication works.
+- Where environment variables are configured.
+- How backups work.
+- How to restore information.
+- How to monitor the application.
+- Which services require account setup or billing.
+
+If configuration requires my action, clearly identify it.
+
+Do not invent database credentials, provider URLs, API keys, or deployment success.
+
+## 21. TESTING
+
+Test the actual application.
+
+Include:
+
+- Registration.
+- Login.
+- Logout.
+- Password reset.
+- Role-based access.
+- Administrator MFA.
+- Alumni profile updates.
+- Consent restrictions.
+- Public alumni search.
+- AI search.
+- Chatbot responses.
+- Interest form submission.
+- Newsletter subscription.
+- Unsubscribe.
+- Database persistence.
+- Database failure handling.
+- File uploads.
+- Unauthorized access.
+- Production-safe database migrations.
+- Backup restoration.
+- Mobile responsiveness.
+
+Verify that:
+
+- Data remains after refresh.
+- Data remains after logout and login.
+- Data is not lost during deployment.
+- Unauthorized users cannot access protected data.
+- Public AI search cannot expose private records.
+- Consent restrictions are respected.
+- Failed submissions do not show false success.
+- The application handles unavailable AI services.
+- The application handles unavailable database services.
+
+Do not claim tests passed unless they were actually run.
+
+## 22. IMPLEMENTATION PRIORITY
+
+Prioritize implementation in this order:
+
+1. Inspect the current project and report its architecture.
+2. Preserve existing working functionality.
+3. Confirm the backend and database approach.
+4. Implement persistent database integration.
+5. Implement authentication and secure roles.
+6. Implement consent and privacy enforcement.
+7. Connect important forms and dashboards.
+8. Implement file storage.
+9. Implement backup and recovery configuration or document required setup.
+10. Implement public AI search.
+11. Implement the visitor chatbot.
+12. Improve the interface and responsive behavior.
+13. Test the complete application.
+14. Prepare deployment instructions.
+
+Because this is a hackathon project, avoid unnecessary infrastructure and complex features that prevent the core website from working.
+
+Build a functional, maintainable solution rather than a large collection of disconnected features.
+
+## 23. FINAL DELIVERABLE
+
+After implementation, provide a clear report containing:
+
+- Existing project architecture.
+- Backend selected and why.
+- Database schema created or updated.
+- Pages connected to persistent data.
+- Authentication and roles implemented.
+- MFA implementation status.
+- AI search implementation status.
+- Chatbot implementation status.
+- File storage implementation status.
+- Backup and recovery status.
+- Security improvements.
+- Tests actually performed.
+- Remaining configuration tasks.
+- Deployment instructions.
+- Environment variables required.
+- Any features that remain incomplete.
+
+Clearly distinguish:
+
+- Implemented and tested.
+- Implemented but not verified.
+- Requires my configuration.
+- Not implemented.
+
+Do not claim that the website is production-ready if authentication, database access, backups, privacy, or security configuration remains incomplete.
+
+Begin by inspecting the existing project and identifying the safest implementation plan. Then implement the improvements incrementally without destroying the existing website or its data.
