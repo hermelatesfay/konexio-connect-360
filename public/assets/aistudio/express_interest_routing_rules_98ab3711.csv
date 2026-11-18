@@ -1,0 +1,8 @@
+if,then,notes
+interest_type = alumni,Notify that alumni member (private_notification_email) AND the Alumni Community Manager,Only if consent_to_publish = TRUE for that alumni; otherwise notify the Alumni Community Manager only
+interest_type = pathway,Notify all consenting alumni in that pathway AND the Alumni Community Manager,Send each alumni a copy; do not reveal the sender's email to unrelated alumni
+visitor_type = Donor,Notify the Partnerships Lead,Also send the sender the latest annual report link
+visitor_type = Employer or Client,Notify the Partnerships Lead,In addition to any alumni notification above
+honeypot_field is not empty,Discard silently - do not notify anyone,This is spam; log it for the security lead
+consent_to_be_contacted = FALSE,Do not forward to alumni; flag to the Partnerships Lead,The sender has not agreed to be contacted
+Every valid submission,Show a confirmation message and send an automatic acknowledgement email,"Include expected response time (for example, within 3 working days)"

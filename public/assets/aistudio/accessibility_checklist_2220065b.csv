@@ -1,0 +1,9 @@
+check,priority,done,notes
+Text has enough contrast against its background,Must,,
+Every image has alt text (alumni photos: name and role; decorative images marked decorative),Must,,
+Site can be used with a keyboard only,Should,,
+Headings follow a logical order (one H1 per page),Should,,
+Forms have visible labels and clear error messages,Must,,
+Videos have captions or a short text summary,Should,,
+Site is readable on a small phone screen and on slow data,Must,,
+"Plain language: short sentences, no unexplained jargon",Should,,

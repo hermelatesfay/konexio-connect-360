@@ -1,0 +1,13 @@
+category,check,priority,done,notes
+Security,"Site uses HTTPS (padlock shows, no mixed-content warnings)",Must,,
+Security,Forms have spam protection (CAPTCHA or honeypot) and are tested with the sample spam rows,Must,,
+Security,No personal emails or phone numbers visible in page source or on the page,Must,,
+Security,"Alumni with consent_to_publish = FALSE do not appear anywhere (including search, filters, embeds)",Must,,
+Security,Alumni with consent_to_show_photo = FALSE show no photo,Must,,
+Security,Privacy notice linked from every form and the footer,Must,,
+Security,Admin accounts use strong passwords and 2FA where available; no shared logins,Must,,
+Security,"API keys, form webhooks and database links are not exposed in public pages or code",Must,,
+Security,Backups or version history exist and the team knows how to restore,Should,,
+Security,Embedded third-party content comes from trusted sources only,Should,,
+Security,Newsletter forms store consent and offer unsubscribe,Should,,
+Security,Test dummy data cannot be mistaken for real people (labels say SAMPLE where relevant),Should,,

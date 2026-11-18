@@ -1,0 +1,11 @@
+partner_id,organisation,type,country,description,logo_file,website,show_on_site
+PAR-01,Savanna Digital Works,Employer,Kenya,Hires freelancers for marketing and design projects.,images/partners/partner_01.png,https://example.com/savanna-digital-works,TRUE
+PAR-02,BrightPath Foundation,Donor,Ghana,Funds digital skills training for young adults.,images/partners/partner_02.png,https://example.com/brightpath-foundation,TRUE
+PAR-03,Lakeside BPO,Employer,Uganda,Outsourcing company hiring customer support agents.,images/partners/partner_03.png,https://example.com/lakeside-bpo,TRUE
+PAR-04,Harmattan Analytics,Employer,Nigeria,Data and research firm hiring analysts and annotators.,images/partners/partner_04.png,https://example.com/harmattan-analytics,TRUE
+PAR-05,Kilimanjaro Creative Studio,Client,Tanzania,Design studio that outsources graphic work.,images/partners/partner_05.png,https://example.com/kilimanjaro-creative-studio,TRUE
+PAR-06,OpenDoor Fund,Donor,Rwanda,Supports refugee and youth employment programmes.,images/partners/partner_06.png,https://example.com/opendoor-fund,TRUE
+PAR-07,Baobab Tech Hub,Training partner,Senegal,Hosts in-person training sessions and mentoring.,images/partners/partner_07.png,https://example.com/baobab-tech-hub,TRUE
+PAR-08,Nile Learning Trust,Donor,Uganda,Education charity funding learner devices and data.,images/partners/partner_08.png,https://example.com/nile-learning-trust,TRUE
+PAR-09,Teranga Logistics,Employer,Senegal,Logistics company hiring virtual assistants.,images/partners/partner_09.png,https://example.com/teranga-logistics,TRUE
+PAR-10,Coastline Commerce,Client,Kenya,E-commerce brand hiring marketing freelancers.,images/partners/partner_10.png,https://example.com/coastline-commerce,TRUE

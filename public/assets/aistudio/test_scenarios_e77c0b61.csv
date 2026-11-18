@@ -1,0 +1,9 @@
+scenario,steps,expected_result,passed,notes
+Prospective learner,"Open the site on a phone, find how to apply, and reach the application form link",Apply link visible within two taps,,
+Employer,"Filter alumni by pathway, open a profile, send an Express Interest message",Confirmation shown; alumni notified; no email visible,,
+Donor,"Find the live impact numbers and the map, download the 2025 annual report, subscribe to the donor newsletter",Numbers match the data source,,
+Alumni,Subscribe to the alumni newsletter and view their own profile,Right list; consent stored,,
+Data update,Apply a row from live_updates_to_simulate.csv to the data source,Dashboard number changes without editing the page,,
+Spam bot,Submit a form with the honeypot field filled,Submission discarded; nobody notified,,
+Consent check,Search for Halima Juma (ALU-14) and Ibrahima Ndiaye's photo (ALU-19),"ALU-14 not visible anywhere; ALU-19 text only, no photo",,
+Mobile,Open every page at phone width,No horizontal scrolling; buttons easy to tap,,

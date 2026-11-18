@@ -1,0 +1,8 @@
+location_id,city,country,latitude,longitude,learners_trained,graduates,employed_or_freelancing_pct,women_pct,cohorts_completed,employed_or_freelancing,as_of
+LOC-01,Nairobi,Kenya,-1.2921,36.8219,310,242,64,56,5,155,2026-10-31
+LOC-02,Kampala,Uganda,0.3476,32.5825,205,160,58,55,3,93,2026-10-31
+LOC-03,Lagos,Nigeria,6.5244,3.3792,240,187,60,52,4,112,2026-10-31
+LOC-04,Accra,Ghana,5.6037,-0.187,160,125,57,54,2,71,2026-10-31
+LOC-05,Kigali,Rwanda,-1.9441,30.0619,120,94,66,58,2,62,2026-10-31
+LOC-06,Dakar,Senegal,14.7167,-17.4677,95,74,52,50,1,38,2026-10-31
+LOC-07,Dar es Salaam,Tanzania,-6.7924,39.2083,118,90,59,53,1,53,2026-10-31
